@@ -11,6 +11,7 @@ import UIKit
 class ViewController: UIViewController {
 
     @IBOutlet weak var ideaTableView: UITableView!
+    var ideaManager = IdeaManager.ideaManager
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,10 +23,9 @@ class ViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        // todo: CoreDataからデータをfetchする
         // CoreDataからデータをfetchしてくる
-        //taskmanager.fetchTask()
-        // ideaTableViewを再読み込みする
+        ideaManager.fetchIdea()
+        // taskTableViewを再読み込みする
         ideaTableView.reloadData()
     }
 
@@ -48,8 +48,7 @@ class ViewController: UIViewController {
         // Addボタンを追加
         let addAction = UIAlertAction(title: "ADD", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
             if let textField = alertController.textFields?.first {
-                // todo: ideaを追加する処理を追加する
-                // self.taskmanager.addNewTask(textField.text!)
+                self.ideaManager.addNewIdea(textField.text!)
                 self.ideaTableView.insertRows(at: [IndexPath(row: 0, section:0)], with: UITableViewRowAnimation.right)
             }
         }
@@ -67,20 +66,13 @@ class ViewController: UIViewController {
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     // セル数を決める
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // todo: テーブルのセル数を決める
-        //return taskmanager.tasks.count
-        return 1;
+        return ideaManager.ideas.count
     }
 
     // セルの内容を決める
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = ideaTableView.dequeueReusableCell(withIdentifier: "ideaCell", for: indexPath)
-
-        // セルのテキストを決める
-        // todo: データベースから表示するideaを取得する
-        //cell.textLabel?.text = taskmanager.tasks[indexPath.row].name
-        cell.textLabel?.text = "test"
-
+        cell.textLabel?.text = ideaManager.ideas[indexPath.row].name
         return cell
     }
 
@@ -97,8 +89,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     // セルの削除処理
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // todo: データベースのideaを削除する
-            //taskmanager.deleteTask(indexPath.row)
+            ideaManager.deleteIdea(indexPath.row)
         }
         // taskTableViewを再読み込みする
         ideaTableView.reloadData()
@@ -108,14 +99,12 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let alertController = UIAlertController(title: "Edit Idea", message: "", preferredStyle: UIAlertControllerStyle.alert)
         alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
-            // todo: データベースから編集するideaを取得する
-            //textField.text = self.taskmanager.tasks[indexPath.row].name
+            textField.text = self.ideaManager.ideas[indexPath.row].name
         })
 
         // Editボタンを追加
         let editAction = UIAlertAction(title: "EDIT", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
-            // todo: ideaの内容を編集する
-            //self.taskmanager.editTask((alertController.textFields?.first?.text)!, indexPath.row)
+            self.ideaManager.editIdea((alertController.textFields?.first?.text)!, indexPath.row)
             self.ideaTableView.reloadData()
         }
         alertController.addAction(editAction)
@@ -134,7 +123,6 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 
     // セルの並び替え
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        // todo: データベースのideaを並び替える
-        //taskmanager.sortTask(sourceIndexPath.row, destinationIndexPath.row)
+        ideaManager.sortIdea(sourceIndexPath.row, destinationIndexPath.row)
     }
 }

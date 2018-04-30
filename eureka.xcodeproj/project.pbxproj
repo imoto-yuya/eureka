@@ -15,6 +15,7 @@
 		FA8C4B4A20956B5500E7C3E6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA8C4B4820956B5500E7C3E6 /* LaunchScreen.storyboard */; };
 		FA8C4B5520956B5500E7C3E6 /* eurekaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8C4B5420956B5500E7C3E6 /* eurekaTests.swift */; };
 		FA8C4B6020956B5500E7C3E6 /* eurekaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8C4B5F20956B5500E7C3E6 /* eurekaUITests.swift */; };
+		FAC5188F2096CC2C00459EBB /* IdeaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC5188E2096CC2C00459EBB /* IdeaManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		FA8C4B5B20956B5500E7C3E6 /* eurekaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = eurekaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA8C4B5F20956B5500E7C3E6 /* eurekaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = eurekaUITests.swift; sourceTree = "<group>"; };
 		FA8C4B6120956B5500E7C3E6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FAC5188E2096CC2C00459EBB /* IdeaManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdeaManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 			children = (
 				FA8C4B3C20956B5300E7C3E6 /* AppDelegate.swift */,
 				FA8C4B3E20956B5300E7C3E6 /* ViewController.swift */,
+				FAC5188E2096CC2C00459EBB /* IdeaManager.swift */,
 				FA8C4B4020956B5300E7C3E6 /* Main.storyboard */,
 				FA8C4B4620956B5500E7C3E6 /* Assets.xcassets */,
 				FA8C4B4820956B5500E7C3E6 /* LaunchScreen.storyboard */,
@@ -261,6 +264,7 @@
 			files = (
 				FA8C4B3F20956B5300E7C3E6 /* ViewController.swift in Sources */,
 				FA8C4B4520956B5300E7C3E6 /* eureka.xcdatamodeld in Sources */,
+				FAC5188F2096CC2C00459EBB /* IdeaManager.swift in Sources */,
 				FA8C4B3D20956B5300E7C3E6 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
