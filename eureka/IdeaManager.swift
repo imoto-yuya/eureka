@@ -42,6 +42,12 @@ class IdeaManager {
         outIdea.order = ideas[index].order
         outIdea.xRatio = ideas[index].xRatio
         outIdea.yRatio = ideas[index].yRatio
+        outIdea.stickyFontSize = ideas[index].stickyFontSize
+        outIdea.stickyWidth = ideas[index].stickyWidth
+        outIdea.stickyHeight = ideas[index].stickyHeight
+        outIdea.stickyRGBRed = ideas[index].stickyRGBRed
+        outIdea.stickyRGBGreen = ideas[index].stickyRGBGreen
+        outIdea.stickyRGBBlue = ideas[index].stickyRGBBlue
         return outIdea
     }
 
@@ -63,6 +69,12 @@ class IdeaManager {
         idea.name = name
         idea.xRatio = 0.5
         idea.yRatio = 0.5
+        idea.stickyFontSize = 12
+        idea.stickyWidth = 100
+        idea.stickyHeight = 80
+        idea.stickyRGBRed = 1.0
+        idea.stickyRGBGreen = 0.937
+        idea.stickyRGBBlue = 0.522
         insertIdea(idea, 0)
     }
 

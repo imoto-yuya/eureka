@@ -35,28 +35,11 @@ class StickyBoardViewController: UIViewController {
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
 
-        let fontSize: CGFloat!
-        let stickyWidth: CGFloat!
-        let stickyHeight: CGFloat!
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            fontSize = 12
-            stickyWidth = 100
-            stickyHeight = 80
-        } else {
-            fontSize = 20
-            stickyWidth = 180
-            stickyHeight = 140
-        }
+        let sizeRatio: Float = UIDevice.current.userInterfaceIdiom == .phone ? 1 : 1.5
 
         for idea in ideaManager.ideas.reversed() {
-            let stickyView = DrawSticky(frame: CGRect(x:CGFloat(idea.xRatio)*screenWidth, y:CGFloat(idea.yRatio)*screenHeight, width:stickyWidth, height:stickyHeight))
-            stickyView.idea = idea
-            stickyView.fontSize = fontSize
-            stickyView.backgroundColor = UIColor(red: 1.0, green: 0.937, blue: 0.522, alpha: 1.0)
-            stickyView.layer.borderWidth = 2.0
-            stickyView.layer.borderColor = UIColor.white.cgColor
+            let stickyView = DrawSticky(frame: CGRect(x:CGFloat(idea.xRatio)*screenWidth, y:CGFloat(idea.yRatio)*screenHeight, width:CGFloat(idea.stickyWidth*sizeRatio), height:CGFloat(idea.stickyHeight*sizeRatio)), idea: idea)
             stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(handlePanGesture)))
-            stickyView.tag = Int(idea.order)
             self.view.addSubview(stickyView)
         }
     }
@@ -90,7 +73,7 @@ class StickyBoardViewController: UIViewController {
             // パンジャスチャの継続:タッチ開始時のビューのoriginにタッチ開始からの移動量を加算する
             let travelPoint = orgOrigin + newParentPoint - orgParentPoint
             ideaManager.ideas[(sender.view?.tag)!].xRatio = Float(travelPoint.x / screenWidth)
-            ideaManager.ideas[(sender.view?.tag)!].yRatio = Float(travelPoint.y / screenWidth)
+            ideaManager.ideas[(sender.view?.tag)!].yRatio = Float(travelPoint.y / screenHeight)
             sender.view?.frame.origin = travelPoint
             break
         default:
