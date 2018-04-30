@@ -63,7 +63,11 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" title="eureka" id="HD0-6d-JZ1">
-                        <barButtonItem key="leftBarButtonItem" systemItem="add" id="Wdf-Km-VlX"/>
+                        <barButtonItem key="leftBarButtonItem" systemItem="add" id="Wdf-Km-VlX">
+                            <connections>
+                                <action selector="addIdeaButton:" destination="BYZ-38-t0r" id="zJf-To-Pkw"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

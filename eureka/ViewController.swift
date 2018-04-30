@@ -20,6 +20,28 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    @IBAction func addIdeaButton(_ sender: Any) {
+        let alertController = UIAlertController(title: "Add Idea", message: "", preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
+            textField.placeholder = "Input Idea"
+        })
+
+        // Addボタンを追加
+        let addAction = UIAlertAction(title: "ADD", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
+            if let textField = alertController.textFields?.first {
+                // todo: ideaを追加する処理を追加する
+                // self.taskmanager.addNewTask(textField.text!)
+                // self.taskTableView.insertRows(at: [IndexPath(row: 0, section:0)], with: UITableViewRowAnimation.right)
+            }
+        }
+        alertController.addAction(addAction)
+
+        // Cancelボタンを追加
+        let cancelAction = UIAlertAction(title: "CANCEL", style: UIAlertActionStyle.cancel, handler: nil)
+        alertController.addAction(cancelAction)
+
+        present(alertController, animated: true, completion: nil)
+    }
 
 }
 
