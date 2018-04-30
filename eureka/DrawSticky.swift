@@ -10,6 +10,7 @@ import UIKit
 
 class DrawSticky: UIView {
     var idea: Idea!
+    var fontSize: CGFloat = 12
 
     /*
     // Only override draw() if you perform custom drawing.
@@ -19,7 +20,7 @@ class DrawSticky: UIView {
     }
     */
     override func draw(_ rect: CGRect) {
-        idea.name?.draw(at: CGPoint(x: 0, y: 0), withAttributes: [NSAttributedStringKey.foregroundColor : UIColor.black, NSAttributedStringKey.font : UIFont.systemFont(ofSize: 24),])
+        idea.name?.draw(at: CGPoint(x: 8, y: 5), withAttributes: [NSAttributedStringKey.foregroundColor : UIColor.black, NSAttributedStringKey.font : UIFont.systemFont(ofSize: CGFloat(fontSize)),])
     }
 
 }

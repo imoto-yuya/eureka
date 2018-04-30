@@ -25,7 +25,7 @@ class StickyBoardViewController: UIViewController {
     // タッチ開始時のUIViewのorigin
     var orgOrigin: CGPoint!
     // タッチ開始時の親ビュー上のタッチ位置
-    var orgParentPoint : CGPoint!
+    var orgParentPoint: CGPoint!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,10 +35,26 @@ class StickyBoardViewController: UIViewController {
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
 
+        let fontSize: CGFloat!
+        let stickyWidth: CGFloat!
+        let stickyHeight: CGFloat!
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            fontSize = 12
+            stickyWidth = 100
+            stickyHeight = 80
+        } else {
+            fontSize = 20
+            stickyWidth = 180
+            stickyHeight = 140
+        }
+
         for idea in ideaManager.ideas.reversed() {
-            let stickyView = DrawSticky(frame: CGRect(x:CGFloat(idea.xRatio)*screenWidth, y:CGFloat(idea.yRatio)*screenHeight, width:100, height:50))
+            let stickyView = DrawSticky(frame: CGRect(x:CGFloat(idea.xRatio)*screenWidth, y:CGFloat(idea.yRatio)*screenHeight, width:stickyWidth, height:stickyHeight))
             stickyView.idea = idea
-            stickyView.backgroundColor = UIColor.yellow
+            stickyView.fontSize = fontSize
+            stickyView.backgroundColor = UIColor(red: 1.0, green: 0.937, blue: 0.522, alpha: 1.0)
+            stickyView.layer.borderWidth = 2.0
+            stickyView.layer.borderColor = UIColor.white.cgColor
             stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(handlePanGesture)))
             stickyView.tag = Int(idea.order)
             self.view.addSubview(stickyView)

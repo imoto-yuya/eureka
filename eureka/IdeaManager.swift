@@ -61,8 +61,8 @@ class IdeaManager {
     func addNewIdea(_ name: String) {
         let idea = Idea(context: context)
         idea.name = name
-        idea.xRatio = 0.05
-        idea.yRatio = 0.2
+        idea.xRatio = 0.5
+        idea.yRatio = 0.5
         insertIdea(idea, 0)
     }
 
