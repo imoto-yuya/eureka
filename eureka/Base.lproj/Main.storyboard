@@ -23,7 +23,11 @@
                                 <rect key="frame" x="0.0" y="623" width="375" height="44"/>
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="ayu-aT-VyC"/>
-                                    <barButtonItem title="Sticky board" id="UVQ-kg-VGi"/>
+                                    <barButtonItem title="Sticky board" id="UVQ-kg-VGi">
+                                        <connections>
+                                            <segue destination="Nss-AK-Fql" kind="show" id="Rzx-EF-UKd"/>
+                                        </connections>
+                                    </barButtonItem>
                                 </items>
                             </toolbar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="e2z-iv-Qx6">
@@ -67,6 +71,21 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="685.60000000000002" y="-564.46776611694156"/>
+        </scene>
+        <!--Sticky Board View Controller-->
+        <scene sceneID="4Ea-a5-ukG">
+            <objects>
+                <viewController id="Nss-AK-Fql" customClass="StickyBoardViewController" customModule="eureka" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Upc-6h-FZy">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="WV6-9W-HLf"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gfP-Ih-jK3" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1506" y="-557"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Y1n-d0-SAt">

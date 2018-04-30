@@ -62,7 +62,7 @@ class IdeaManager {
         let idea = Idea(context: context)
         idea.name = name
         idea.xRatio = 0.05
-        idea.yRatio = 0.05
+        idea.yRatio = 0.2
         insertIdea(idea, 0)
     }
 
