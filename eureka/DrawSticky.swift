@@ -37,6 +37,7 @@ class DrawSticky: UITextView {
         self.layer.borderWidth = 2.0
         self.layer.borderColor = UIColor.white.cgColor
         self.tag = Int(idea.order)
+        self.isEditable = false
     }
 
 }
