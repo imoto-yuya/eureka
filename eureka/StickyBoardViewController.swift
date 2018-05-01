@@ -38,8 +38,8 @@ class StickyBoardViewController: UIViewController {
         let sizeRatio: Float = UIDevice.current.userInterfaceIdiom == .phone ? 1 : 1.5
 
         for idea in ideaManager.ideas.reversed() {
-            let stickyX: CGFloat = CGFloat(idea.xRatio)*screenWidth
-            let stickyY: CGFloat = CGFloat(idea.yRatio)*screenHeight
+            let stickyX: CGFloat = CGFloat(idea.xRatio)*screenWidth - CGFloat(idea.stickyWidth/2)
+            let stickyY: CGFloat = CGFloat(idea.yRatio)*screenHeight - CGFloat(idea.stickyHeight/2)
             let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*sizeRatio)
             let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*sizeRatio)
             let stickyView = DrawSticky(frame: CGRect(x:stickyX, y:stickyY, width:stickyWidth, height:stickyHeight), idea: idea)
@@ -81,8 +81,8 @@ class StickyBoardViewController: UIViewController {
             let newParentPoint = sender.translation(in: self.view)
             // パンジャスチャの継続:タッチ開始時のビューのoriginにタッチ開始からの移動量を加算する
             let travelPoint = orgOrigin + newParentPoint - orgParentPoint
-            ideaManager.ideas[(sender.view?.tag)!].xRatio = Float(travelPoint.x / screenWidth)
-            ideaManager.ideas[(sender.view?.tag)!].yRatio = Float(travelPoint.y / screenHeight)
+            ideaManager.ideas[(sender.view?.tag)!].xRatio = (Float(travelPoint.x) + ideaManager.ideas[(sender.view?.tag)!].stickyWidth/2) / Float(screenWidth)
+            ideaManager.ideas[(sender.view?.tag)!].yRatio = (Float(travelPoint.y) + ideaManager.ideas[(sender.view?.tag)!].stickyHeight/2) / Float(screenHeight)
             sender.view?.frame.origin = travelPoint
             break
         default:
@@ -95,8 +95,8 @@ class StickyBoardViewController: UIViewController {
         screenHeight = self.view.bounds.height
         for subview in self.view.subviews {
             let idea = ideaManager.ideas[subview.tag]
-            let stickyX: CGFloat = CGFloat(idea.xRatio)*screenWidth
-            let stickyY: CGFloat = CGFloat(idea.yRatio)*screenHeight
+            let stickyX: CGFloat = CGFloat(idea.xRatio)*screenWidth - CGFloat(idea.stickyWidth/2)
+            let stickyY: CGFloat = CGFloat(idea.yRatio)*screenHeight - CGFloat(idea.stickyHeight/2)
             subview.frame.origin = CGPoint(x:stickyX, y:stickyY)
         }
     }
