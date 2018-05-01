@@ -49,6 +49,7 @@ class StickyBoardViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        navigationController?.setNavigationBarHidden(true, animated: false)
         // #selectorで通知後に動く関数を指定。name:は型推論可(".UIDeviceOrientationDidChange")
         NotificationCenter.default.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
     }

@@ -23,6 +23,7 @@ class ViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        navigationController?.setNavigationBarHidden(false, animated: false)
         // CoreDataからデータをfetchしてくる
         ideaManager.fetchIdea()
         // taskTableViewを再読み込みする

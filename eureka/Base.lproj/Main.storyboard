@@ -31,7 +31,7 @@
                                 </items>
                             </toolbar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="e2z-iv-Qx6">
-                                <rect key="frame" x="0.0" y="64" width="375" height="559"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="603"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ideaCell" id="GUF-8D-PwK">
@@ -79,7 +79,24 @@
                     <view key="view" contentMode="scaleToFill" id="Upc-6h-FZy">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0lM-77-1Vn">
+                                <rect key="frame" x="0.0" y="623" width="375" height="44"/>
+                                <items>
+                                    <barButtonItem title="Idea table" id="0aY-aP-jCA">
+                                        <connections>
+                                            <segue destination="BYZ-38-t0r" kind="show" id="VlO-Iz-qFC"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="0lM-77-1Vn" firstAttribute="trailing" secondItem="WV6-9W-HLf" secondAttribute="trailing" id="BPy-wr-4DH"/>
+                            <constraint firstItem="0lM-77-1Vn" firstAttribute="leading" secondItem="WV6-9W-HLf" secondAttribute="leading" id="GKB-Ke-bhq"/>
+                            <constraint firstItem="0lM-77-1Vn" firstAttribute="bottom" secondItem="WV6-9W-HLf" secondAttribute="bottom" id="SEn-j7-O1E"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="WV6-9W-HLf"/>
                     </view>
                 </viewController>
@@ -106,4 +123,7 @@
             <point key="canvasLocation" x="-154.40000000000001" y="-564.46776611694156"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="VlO-Iz-qFC"/>
+    </inferredMetricsTieBreakers>
 </document>
