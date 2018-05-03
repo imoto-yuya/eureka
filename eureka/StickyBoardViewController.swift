@@ -21,6 +21,7 @@ class StickyBoardViewController: UIViewController {
     var ideaManager = IdeaManager.ideaManager
     var screenWidth: CGFloat = 0
     var screenHeight: CGFloat = 0
+    var sizeRatio: Float = 1
 
     // タッチ開始時のUIViewのorigin
     var orgOrigin: CGPoint!
@@ -35,11 +36,11 @@ class StickyBoardViewController: UIViewController {
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
 
-        let sizeRatio: Float = UIDevice.current.userInterfaceIdiom == .phone ? 1 : 1.5
+        sizeRatio = UIDevice.current.userInterfaceIdiom == .phone ? 1 : 1.5
 
         for idea in ideaManager.ideas.reversed() {
-            let stickyX: CGFloat = CGFloat(idea.xRatio)*screenWidth - CGFloat(idea.stickyWidth/2)
-            let stickyY: CGFloat = CGFloat(idea.yRatio)*screenHeight - CGFloat(idea.stickyHeight/2)
+            let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, idea.stickyWidth*sizeRatio)
+            let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, idea.stickyHeight*sizeRatio)
             let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*sizeRatio)
             let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*sizeRatio)
             let stickyView = DrawSticky(frame: CGRect(x:stickyX, y:stickyY, width:stickyWidth, height:stickyHeight), idea: idea)
@@ -82,8 +83,9 @@ class StickyBoardViewController: UIViewController {
             let newParentPoint = sender.translation(in: self.view)
             // パンジャスチャの継続:タッチ開始時のビューのoriginにタッチ開始からの移動量を加算する
             let travelPoint = orgOrigin + newParentPoint - orgParentPoint
-            ideaManager.ideas[(sender.view?.tag)!].xRatio = (Float(travelPoint.x) + ideaManager.ideas[(sender.view?.tag)!].stickyWidth/2) / Float(screenWidth)
-            ideaManager.ideas[(sender.view?.tag)!].yRatio = (Float(travelPoint.y) + ideaManager.ideas[(sender.view?.tag)!].stickyHeight/2) / Float(screenHeight)
+            let idea = ideaManager.ideas[(sender.view?.tag)!]
+            idea.xRatio = calculateRatio(Float(screenWidth), Float(travelPoint.x), idea.stickyWidth*sizeRatio)
+            idea.yRatio = calculateRatio(Float(screenHeight), Float(travelPoint.y), idea.stickyHeight*sizeRatio)
             sender.view?.frame.origin = travelPoint
             break
         default:
@@ -96,9 +98,35 @@ class StickyBoardViewController: UIViewController {
         screenHeight = self.view.bounds.height
         for subview in self.view.subviews {
             let idea = ideaManager.ideas[subview.tag]
-            let stickyX: CGFloat = CGFloat(idea.xRatio)*screenWidth - CGFloat(idea.stickyWidth/2)
-            let stickyY: CGFloat = CGFloat(idea.yRatio)*screenHeight - CGFloat(idea.stickyHeight/2)
+            let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, idea.stickyWidth*sizeRatio)
+            let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, idea.stickyHeight*sizeRatio)
             subview.frame.origin = CGPoint(x:stickyX, y:stickyY)
         }
+    }
+
+    func calculateCoordinate(_ screenLength: Float, _ ratio: Float, _ stickyLength: Float) -> CGFloat {
+        let center = screenLength*ratio
+        let distance = abs(screenLength/2 - center)
+        let coeff = distance/(screenLength/2 + stickyLength/2)
+        var coordinate = center - stickyLength/2
+        if center < screenLength/2 {
+            coordinate += stickyLength/2*coeff
+        } else {
+            coordinate -= stickyLength/2*coeff
+        }
+        return CGFloat(coordinate)
+    }
+
+    func calculateRatio(_ screenLength: Float, _ travelLength: Float, _ stickyLength: Float) -> Float {
+        let center = travelLength + stickyLength/2
+        let distance = abs(screenLength/2 - center)
+        let coeff = distance/(screenLength/2 + stickyLength/2)
+        var length = center
+        if center < screenLength/2 {
+            length -= stickyLength/2*coeff
+        } else {
+            length += stickyLength/2*coeff
+        }
+        return length/screenLength
     }
 }
