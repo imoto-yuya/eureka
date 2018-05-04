@@ -39,11 +39,12 @@ class StickyBoardViewController: UIViewController {
         sizeRatio = UIDevice.current.userInterfaceIdiom == .phone ? 1 : 1.5
 
         for idea in ideaManager.ideas.reversed() {
-            let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, idea.stickyWidth*sizeRatio)
-            let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, idea.stickyHeight*sizeRatio)
             let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*sizeRatio)
             let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*sizeRatio)
-            let stickyView = DrawSticky(frame: CGRect(x:stickyX, y:stickyY, width:stickyWidth, height:stickyHeight), idea: idea)
+            let stickyView = DrawSticky(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), idea: idea)
+            let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, Float(stickyWidth))
+            let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, Float(stickyHeight))
+            stickyView.center = CGPoint(x: stickyX, y: stickyY)
             stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(handlePanGesture)))
             self.view.addSubview(stickyView)
         }
@@ -75,7 +76,7 @@ class StickyBoardViewController: UIViewController {
         switch sender.state {
         case UIGestureRecognizerState.began:
             // タッチ開始:タッチされたビューのoriginと親ビュー上のタッチ位置を記録しておく
-            orgOrigin = sender.view?.frame.origin
+            orgOrigin = sender.view?.center
             orgParentPoint = sender.translation(in: self.view)
             break
         case UIGestureRecognizerState.changed:
@@ -86,7 +87,7 @@ class StickyBoardViewController: UIViewController {
             let idea = ideaManager.ideas[(sender.view?.tag)!]
             idea.xRatio = calculateRatio(Float(screenWidth), Float(travelPoint.x), idea.stickyWidth*sizeRatio)
             idea.yRatio = calculateRatio(Float(screenHeight), Float(travelPoint.y), idea.stickyHeight*sizeRatio)
-            sender.view?.frame.origin = travelPoint
+            sender.view?.center = travelPoint
             break
         default:
             break
@@ -100,33 +101,15 @@ class StickyBoardViewController: UIViewController {
             let idea = ideaManager.ideas[subview.tag]
             let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, idea.stickyWidth*sizeRatio)
             let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, idea.stickyHeight*sizeRatio)
-            subview.frame.origin = CGPoint(x:stickyX, y:stickyY)
+            subview.center = CGPoint(x:stickyX, y:stickyY)
         }
     }
 
     func calculateCoordinate(_ screenLength: Float, _ ratio: Float, _ stickyLength: Float) -> CGFloat {
-        let center = screenLength*ratio
-        let distance = abs(screenLength/2 - center)
-        let coeff = distance/(screenLength/2 + stickyLength/2)
-        var coordinate = center - stickyLength/2
-        if center < screenLength/2 {
-            coordinate += stickyLength/2*coeff
-        } else {
-            coordinate -= stickyLength/2*coeff
-        }
-        return CGFloat(coordinate)
+        return CGFloat((screenLength - stickyLength)/2*ratio + screenLength/2)
     }
 
     func calculateRatio(_ screenLength: Float, _ travelLength: Float, _ stickyLength: Float) -> Float {
-        let center = travelLength + stickyLength/2
-        let distance = abs(screenLength/2 - center)
-        let coeff = distance/(screenLength/2 + stickyLength/2)
-        var length = center
-        if center < screenLength/2 {
-            length -= stickyLength/2*coeff
-        } else {
-            length += stickyLength/2*coeff
-        }
-        return length/screenLength
+        return 2*(travelLength - screenLength/2)/(screenLength - stickyLength)
     }
 }
