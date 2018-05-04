@@ -67,8 +67,8 @@ class IdeaManager {
     func addNewIdea(_ name: String) {
         let idea = Idea(context: context)
         idea.name = name
-        idea.xRatio = 0.5
-        idea.yRatio = 0.5
+        idea.xRatio = 0
+        idea.yRatio = 0
         idea.stickyFontSize = 12
         idea.stickyWidth = 100
         idea.stickyHeight = 80

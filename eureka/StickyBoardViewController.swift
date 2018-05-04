@@ -21,6 +21,7 @@ class StickyBoardViewController: UIViewController {
     var ideaManager = IdeaManager.ideaManager
     var screenWidth: CGFloat = 0
     var screenHeight: CGFloat = 0
+    var sizeRatio: Float = 1
 
     // タッチ開始時のUIViewのorigin
     var orgOrigin: CGPoint!
@@ -35,14 +36,15 @@ class StickyBoardViewController: UIViewController {
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
 
-        let sizeRatio: Float = UIDevice.current.userInterfaceIdiom == .phone ? 1 : 1.5
+        sizeRatio = UIDevice.current.userInterfaceIdiom == .phone ? 1 : 1.5
 
         for idea in ideaManager.ideas.reversed() {
-            let stickyX: CGFloat = CGFloat(idea.xRatio)*screenWidth - CGFloat(idea.stickyWidth/2)
-            let stickyY: CGFloat = CGFloat(idea.yRatio)*screenHeight - CGFloat(idea.stickyHeight/2)
             let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*sizeRatio)
             let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*sizeRatio)
-            let stickyView = DrawSticky(frame: CGRect(x:stickyX, y:stickyY, width:stickyWidth, height:stickyHeight), idea: idea)
+            let stickyView = DrawSticky(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), idea: idea)
+            let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, Float(stickyWidth))
+            let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, Float(stickyHeight))
+            stickyView.center = CGPoint(x: stickyX, y: stickyY)
             stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(handlePanGesture)))
             self.view.addSubview(stickyView)
         }
@@ -74,7 +76,7 @@ class StickyBoardViewController: UIViewController {
         switch sender.state {
         case UIGestureRecognizerState.began:
             // タッチ開始:タッチされたビューのoriginと親ビュー上のタッチ位置を記録しておく
-            orgOrigin = sender.view?.frame.origin
+            orgOrigin = sender.view?.center
             orgParentPoint = sender.translation(in: self.view)
             break
         case UIGestureRecognizerState.changed:
@@ -82,9 +84,10 @@ class StickyBoardViewController: UIViewController {
             let newParentPoint = sender.translation(in: self.view)
             // パンジャスチャの継続:タッチ開始時のビューのoriginにタッチ開始からの移動量を加算する
             let travelPoint = orgOrigin + newParentPoint - orgParentPoint
-            ideaManager.ideas[(sender.view?.tag)!].xRatio = (Float(travelPoint.x) + ideaManager.ideas[(sender.view?.tag)!].stickyWidth/2) / Float(screenWidth)
-            ideaManager.ideas[(sender.view?.tag)!].yRatio = (Float(travelPoint.y) + ideaManager.ideas[(sender.view?.tag)!].stickyHeight/2) / Float(screenHeight)
-            sender.view?.frame.origin = travelPoint
+            let idea = ideaManager.ideas[(sender.view?.tag)!]
+            idea.xRatio = calculateRatio(Float(screenWidth), Float(travelPoint.x), idea.stickyWidth*sizeRatio)
+            idea.yRatio = calculateRatio(Float(screenHeight), Float(travelPoint.y), idea.stickyHeight*sizeRatio)
+            sender.view?.center = travelPoint
             break
         default:
             break
@@ -96,9 +99,17 @@ class StickyBoardViewController: UIViewController {
         screenHeight = self.view.bounds.height
         for subview in self.view.subviews {
             let idea = ideaManager.ideas[subview.tag]
-            let stickyX: CGFloat = CGFloat(idea.xRatio)*screenWidth - CGFloat(idea.stickyWidth/2)
-            let stickyY: CGFloat = CGFloat(idea.yRatio)*screenHeight - CGFloat(idea.stickyHeight/2)
-            subview.frame.origin = CGPoint(x:stickyX, y:stickyY)
+            let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, idea.stickyWidth*sizeRatio)
+            let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, idea.stickyHeight*sizeRatio)
+            subview.center = CGPoint(x:stickyX, y:stickyY)
         }
+    }
+
+    func calculateCoordinate(_ screenLength: Float, _ ratio: Float, _ stickyLength: Float) -> CGFloat {
+        return CGFloat((screenLength - stickyLength)/2*ratio + screenLength/2)
+    }
+
+    func calculateRatio(_ screenLength: Float, _ travelLength: Float, _ stickyLength: Float) -> Float {
+        return 2*(travelLength - screenLength/2)/(screenLength - stickyLength)
     }
 }
