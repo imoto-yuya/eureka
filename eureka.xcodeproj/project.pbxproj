@@ -18,6 +18,7 @@
 		FAC5188F2096CC2C00459EBB /* IdeaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC5188E2096CC2C00459EBB /* IdeaManager.swift */; };
 		FAC518912097431E00459EBB /* StickyBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC518902097431E00459EBB /* StickyBoardViewController.swift */; };
 		FAC518932097454F00459EBB /* DrawSticky.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC518922097454F00459EBB /* DrawSticky.swift */; };
+		FAF3998F20A88BA4009108A6 /* RandomizedExtraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF3998E20A88BA4009108A6 /* RandomizedExtraction.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		FAC5188E2096CC2C00459EBB /* IdeaManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdeaManager.swift; sourceTree = "<group>"; };
 		FAC518902097431E00459EBB /* StickyBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyBoardViewController.swift; sourceTree = "<group>"; };
 		FAC518922097454F00459EBB /* DrawSticky.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawSticky.swift; sourceTree = "<group>"; };
+		FAF3998E20A88BA4009108A6 /* RandomizedExtraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomizedExtraction.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +110,7 @@
 				FA8C4B3C20956B5300E7C3E6 /* AppDelegate.swift */,
 				FA8C4B3E20956B5300E7C3E6 /* ViewController.swift */,
 				FAC5188E2096CC2C00459EBB /* IdeaManager.swift */,
+				FAF3998E20A88BA4009108A6 /* RandomizedExtraction.swift */,
 				FA8C4B4020956B5300E7C3E6 /* Main.storyboard */,
 				FAC518902097431E00459EBB /* StickyBoardViewController.swift */,
 				FAC518922097454F00459EBB /* DrawSticky.swift */,
@@ -273,6 +276,7 @@
 				FAC518912097431E00459EBB /* StickyBoardViewController.swift in Sources */,
 				FAC5188F2096CC2C00459EBB /* IdeaManager.swift in Sources */,
 				FAC518932097454F00459EBB /* DrawSticky.swift in Sources */,
+				FAF3998F20A88BA4009108A6 /* RandomizedExtraction.swift in Sources */,
 				FA8C4B3D20956B5300E7C3E6 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

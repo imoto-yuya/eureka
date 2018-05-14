@@ -36,9 +36,17 @@ class StickyBoardViewController: UIViewController {
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
 
-        sizeRatio = UIDevice.current.userInterfaceIdiom == .phone ? 1 : 1.5
+        var needNum: Int = 8
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            sizeRatio = 1.5
+            needNum = 20
+        }
 
-        for idea in ideaManager.ideas.reversed() {
+        let random = RandomizedExtraction(ideaManager.ideas.count)
+        let indexList = random.getIndexList(needNum)
+
+        for index in indexList.reversed() {
+            let idea = ideaManager.ideas[index]
             let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*sizeRatio)
             let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*sizeRatio)
             let stickyView = DrawSticky(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), idea: idea)
