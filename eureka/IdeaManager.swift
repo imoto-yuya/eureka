@@ -38,6 +38,7 @@ class IdeaManager {
 
     func copyIdea(_ index: Int) -> Idea {
         let outIdea = Idea(context: context)
+        outIdea.id = ideas[index].id
         outIdea.name = ideas[index].name
         outIdea.order = ideas[index].order
         outIdea.xRatio = ideas[index].xRatio
@@ -66,6 +67,7 @@ class IdeaManager {
 
     func addNewIdea(_ name: String) {
         let idea = Idea(context: context)
+        idea.id = NSUUID() as UUID
         idea.name = name
         idea.xRatio = 0
         idea.yRatio = 0

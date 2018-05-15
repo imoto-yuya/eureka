@@ -44,8 +44,10 @@ class StickyBoardViewController: UIViewController {
 
         let random = RandomizedExtraction(ideaManager.ideas.count)
         let indexList = random.getIndexList(needNum)
+        var idList: [UUID] = []
 
-        for index in indexList.reversed() {
+        for index in indexList {
+            idList.append(ideaManager.ideas[index].id!)
             let idea = ideaManager.ideas[index]
             let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*sizeRatio)
             let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*sizeRatio)
