@@ -81,10 +81,8 @@ class IdeaManager {
     }
 
     func editIdea(_ name: String, _ index: Int) {
-        let editIdea = copyIdea(index)
-        editIdea.name = name
-        deleteIdea(index)
-        insertIdea(editIdea, index)
+        self.ideas[index].name = name
+        (UIApplication.shared.delegate as! AppDelegate).saveContext()
     }
 
     func sortIdea(_ sourceIndexPath: Int, _ destinationIndexPath: Int) {
