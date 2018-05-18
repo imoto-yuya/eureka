@@ -61,7 +61,6 @@ class StickyBoardViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        navigationController?.setNavigationBarHidden(true, animated: false)
         // #selectorで通知後に動く関数を指定。name:は型推論可(".UIDeviceOrientationDidChange")
         NotificationCenter.default.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
     }
@@ -121,5 +120,8 @@ class StickyBoardViewController: UIViewController {
 
     func calculateRatio(_ screenLength: Float, _ travelLength: Float, _ stickyLength: Float) -> Float {
         return 2*(travelLength - screenLength/2)/(screenLength - stickyLength)
+    }
+
+    @IBAction func saveButton(_ sender: UIBarButtonItem) {
     }
 }
