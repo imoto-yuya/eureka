@@ -48,7 +48,7 @@ class StickyBoardViewController: UIViewController {
 
         let random = RandomizedExtraction(ideaManager.ideas.count)
         let indexList = random.getIndexList(needNum)
-        self.groupID = ideaManager.getGroupList().max()! + 1
+        self.groupID = (ideaManager.groupList.last?.0.advanced(by: 1))!
 
         for index in indexList {
             let idea = ideaManager.copyIdea(index)

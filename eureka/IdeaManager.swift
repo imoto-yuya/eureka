@@ -17,6 +17,7 @@ class IdeaManager {
     var context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     var ideas: [Idea] = []
     var allIdeaList: [Idea] = []
+    var groupList: [(Int16, String)] = []
 
     func fetchIdea() {
         let fetchRequest: NSFetchRequest<Idea> = Idea.fetchRequest()
@@ -32,11 +33,20 @@ class IdeaManager {
 
     func fetchAllIdea() {
         let fetchRequest: NSFetchRequest<Idea> = Idea.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "groupID", ascending: true)]
         do {
             allIdeaList = []
             allIdeaList = try context.fetch(fetchRequest)
         } catch {
             print("Fetching Failed")
+        }
+        var tempGroupID: Int16 = 0
+        groupList = []
+        for idea in self.allIdeaList {
+            if idea.groupID != tempGroupID && idea.isSave {
+                groupList.append((idea.groupID, idea.groupName!))
+                tempGroupID = idea.groupID
+            }
         }
     }
 
@@ -107,29 +117,12 @@ class IdeaManager {
         insertIdea(idea, destinationIndexPath)
     }
 
-    func getGroupList() -> Set<Int16> {
-        var groupIDList = Set<Int16>()
-        for idea in allIdeaList {
-            groupIDList.insert(idea.groupID)
-        }
-        return groupIDList
-    }
-
-    func getSaveBoardNum() -> Int {
-        var saveGroupIDList = Set<Int16>()
-        for idea in allIdeaList {
-            if idea.isSave {
-                saveGroupIDList.insert(idea.groupID)
-            }
-        }
-        return saveGroupIDList.count
-    }
-
     func saveIdea(_ groupID: Int16, _ groupName: String) {
         for idea in allIdeaList {
             if idea.groupID == groupID {
                 idea.groupName = groupName
                 idea.isSave = true
+                self.groupList.append((idea.groupID, idea.groupName!))
             }
         }
         (UIApplication.shared.delegate as! AppDelegate).saveContext()
