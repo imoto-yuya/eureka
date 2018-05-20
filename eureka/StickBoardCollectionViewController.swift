@@ -14,7 +14,7 @@ class StickBoardCollectionViewController: UICollectionViewController {
 
     @IBOutlet weak var stickyBoardCollectionView: UICollectionView!
 
-    var boardNum: Int = 2
+    var ideaManager = IdeaManager.ideaManager
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +26,10 @@ class StickBoardCollectionViewController: UICollectionViewController {
         // self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
 
         // Do any additional setup after loading the view.
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        ideaManager.fetchAllIdea()
     }
 
     override func didReceiveMemoryWarning() {
@@ -53,14 +57,14 @@ class StickBoardCollectionViewController: UICollectionViewController {
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return boardNum
+        return ideaManager.getSaveBoardNum()
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
-    
+
         // Configure the cell
-    
+
         return cell
     }
 
@@ -91,7 +95,7 @@ class StickBoardCollectionViewController: UICollectionViewController {
     }
 
     override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-    
+
     }
     */
 

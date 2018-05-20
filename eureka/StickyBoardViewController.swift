@@ -22,6 +22,8 @@ class StickyBoardViewController: UIViewController {
     var screenWidth: CGFloat = 0
     var screenHeight: CGFloat = 0
     var sizeRatio: Float = 1
+    var tempIdea: [Idea] = []
+    var groupID: Int16 = 0
 
     // タッチ開始時のUIViewのorigin
     var orgOrigin: CGPoint!
@@ -32,6 +34,8 @@ class StickyBoardViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        ideaManager.fetchIdea()
+        ideaManager.fetchAllIdea()
         // Screen Size の取得
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
@@ -44,25 +48,35 @@ class StickyBoardViewController: UIViewController {
 
         let random = RandomizedExtraction(ideaManager.ideas.count)
         let indexList = random.getIndexList(needNum)
-        var idList: [UUID] = []
+        self.groupID = ideaManager.getGroupList().max()! + 1
 
         for index in indexList {
-            idList.append(ideaManager.ideas[index].id!)
-            let idea = ideaManager.ideas[index]
+            let idea = ideaManager.copyIdea(index)
+            idea.groupID = self.groupID
             let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*sizeRatio)
             let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*sizeRatio)
             let stickyView = DrawSticky(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), idea: idea)
+            stickyView.tag = tempIdea.count
             let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, Float(stickyWidth))
             let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, Float(stickyHeight))
             stickyView.center = CGPoint(x: stickyX, y: stickyY)
             stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(handlePanGesture)))
             self.view.addSubview(stickyView)
+            tempIdea.append(idea)
         }
     }
 
     override func viewWillAppear(_ animated: Bool) {
         // #selectorで通知後に動く関数を指定。name:は型推論可(".UIDeviceOrientationDidChange")
         NotificationCenter.default.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
+        ideaManager.fetchIdea()
+        ideaManager.fetchAllIdea()
+    }
+
+    override func didMove(toParentViewController parent: UIViewController?) {
+        if parent == nil {
+            ideaManager.deleteGroup(self.groupID, force: false)
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -93,7 +107,7 @@ class StickyBoardViewController: UIViewController {
             let newParentPoint = sender.translation(in: self.view)
             // パンジャスチャの継続:タッチ開始時のビューのoriginにタッチ開始からの移動量を加算する
             let travelPoint = orgOrigin + newParentPoint - orgParentPoint
-            let idea = ideaManager.ideas[(sender.view?.tag)!]
+            let idea = tempIdea[(sender.view?.tag)!]
             idea.xRatio = calculateRatio(Float(screenWidth), Float(travelPoint.x), idea.stickyWidth*sizeRatio)
             idea.yRatio = calculateRatio(Float(screenHeight), Float(travelPoint.y), idea.stickyHeight*sizeRatio)
             sender.view?.center = travelPoint
@@ -107,7 +121,7 @@ class StickyBoardViewController: UIViewController {
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
         for subview in self.view.subviews {
-            let idea = ideaManager.ideas[subview.tag]
+            let idea = tempIdea[subview.tag]
             let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, idea.stickyWidth*sizeRatio)
             let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, idea.stickyHeight*sizeRatio)
             subview.center = CGPoint(x:stickyX, y:stickyY)
@@ -123,5 +137,6 @@ class StickyBoardViewController: UIViewController {
     }
 
     @IBAction func saveButton(_ sender: UIBarButtonItem) {
+        ideaManager.saveIdea(groupID, "idea" + groupID.description)
     }
 }
