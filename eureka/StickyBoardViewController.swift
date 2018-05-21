@@ -33,6 +33,9 @@ class StickyBoardViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let rootViewController = self.navigationController?.viewControllers.first
+        self.navigationController?.setViewControllers([rootViewController!, self], animated:true)
+
         // Do any additional setup after loading the view.
         ideaManager.fetchIdea()
         ideaManager.fetchAllIdea()

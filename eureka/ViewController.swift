@@ -15,6 +15,8 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "IdeaList", style: .plain, target: nil, action: nil)
+
         // Do any additional setup after loading the view, typically from a nib.
         self.ideaTableView.dataSource = self
         self.ideaTableView.delegate = self

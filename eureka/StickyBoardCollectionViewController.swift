@@ -72,6 +72,7 @@ class StickyBoardCollectionViewController: UICollectionViewController {
 
     // cell選択時
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "IdeaList", style: .plain, target: nil, action: nil)
         self.selectedGroupID = ideaManager.groupList[indexPath.item].0
         performSegue(withIdentifier: "toStickyBoard", sender: nil)
     }
