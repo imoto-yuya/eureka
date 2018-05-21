@@ -154,6 +154,7 @@
                     </collectionView>
                     <connections>
                         <outlet property="stickyBoardCollectionView" destination="yQw-Jn-38j" id="ULO-IB-pqt"/>
+                        <segue destination="Nss-AK-Fql" kind="show" identifier="toStickyBoard" id="aud-zY-Rgg"/>
                     </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IQC-w9-8ME" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -179,4 +180,7 @@
             <point key="canvasLocation" x="-154.40000000000001" y="-564.46776611694156"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="Rzx-EF-UKd"/>
+    </inferredMetricsTieBreakers>
 </document>

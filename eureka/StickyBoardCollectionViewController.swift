@@ -15,6 +15,7 @@ class StickyBoardCollectionViewController: UICollectionViewController {
     @IBOutlet weak var stickyBoardCollectionView: UICollectionView!
 
     var ideaManager = IdeaManager.ideaManager
+    var selectedGroupID: Int16 = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,6 +68,12 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         cell.name.text = ideaManager.groupList[indexPath.item].1
 
         return cell
+    }
+
+    // cell選択時
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.selectedGroupID = ideaManager.groupList[indexPath.item].0
+        performSegue(withIdentifier: "toStickyBoard", sender: nil)
     }
 
     // MARK: UICollectionViewDelegate

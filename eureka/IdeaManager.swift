@@ -42,12 +42,19 @@ class IdeaManager {
         }
         var tempGroupID: Int16 = 0
         groupList = []
+        var temp: [Int16] = []
+        var temp2: Int16 = 0
         for idea in self.allIdeaList {
+            if idea.groupID != temp2 {
+                temp.append(idea.groupID)
+                temp2 = idea.groupID
+            }
             if idea.groupID != tempGroupID && idea.isSave {
                 groupList.append((idea.groupID, idea.groupName!))
                 tempGroupID = idea.groupID
             }
         }
+        print(temp)
     }
 
     func updateOrder() {
