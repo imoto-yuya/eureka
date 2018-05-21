@@ -20,6 +20,7 @@
 		FAC518932097454F00459EBB /* DrawSticky.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC518922097454F00459EBB /* DrawSticky.swift */; };
 		FAF3998F20A88BA4009108A6 /* RandomizedExtraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF3998E20A88BA4009108A6 /* RandomizedExtraction.swift */; };
 		FAF3999120AF392E009108A6 /* StickBoardCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF3999020AF392E009108A6 /* StickBoardCollectionViewController.swift */; };
+		FAF3999320B31B18009108A6 /* StickyBoardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF3999220B31B18009108A6 /* StickyBoardCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 		FAC518922097454F00459EBB /* DrawSticky.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawSticky.swift; sourceTree = "<group>"; };
 		FAF3998E20A88BA4009108A6 /* RandomizedExtraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomizedExtraction.swift; sourceTree = "<group>"; };
 		FAF3999020AF392E009108A6 /* StickBoardCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickBoardCollectionViewController.swift; sourceTree = "<group>"; };
+		FAF3999220B31B18009108A6 /* StickyBoardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyBoardCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +116,7 @@
 				FAC5188E2096CC2C00459EBB /* IdeaManager.swift */,
 				FAF3998E20A88BA4009108A6 /* RandomizedExtraction.swift */,
 				FA8C4B4020956B5300E7C3E6 /* Main.storyboard */,
+				FAF3999220B31B18009108A6 /* StickyBoardCollectionViewCell.swift */,
 				FAF3999020AF392E009108A6 /* StickBoardCollectionViewController.swift */,
 				FAC518902097431E00459EBB /* StickyBoardViewController.swift */,
 				FAC518922097454F00459EBB /* DrawSticky.swift */,
@@ -279,6 +282,7 @@
 				FAC518912097431E00459EBB /* StickyBoardViewController.swift in Sources */,
 				FAC5188F2096CC2C00459EBB /* IdeaManager.swift in Sources */,
 				FAF3999120AF392E009108A6 /* StickBoardCollectionViewController.swift in Sources */,
+				FAF3999320B31B18009108A6 /* StickyBoardCollectionViewCell.swift in Sources */,
 				FAC518932097454F00459EBB /* DrawSticky.swift in Sources */,
 				FAF3998F20A88BA4009108A6 /* RandomizedExtraction.swift in Sources */,
 				FA8C4B3D20956B5300E7C3E6 /* AppDelegate.swift in Sources */,

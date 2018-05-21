@@ -8,7 +8,7 @@
 
 import UIKit
 
-private let reuseIdentifier = "board"
+private let reuseIdentifier = "stickyBoard"
 
 class StickBoardCollectionViewController: UICollectionViewController {
 
@@ -61,9 +61,10 @@ class StickBoardCollectionViewController: UICollectionViewController {
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! StickyBoardCollectionViewCell
 
         // Configure the cell
+        cell.name.text = ideaManager.groupList[indexPath.item].1
 
         return cell
     }
