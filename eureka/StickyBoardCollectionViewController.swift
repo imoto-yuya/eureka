@@ -10,7 +10,7 @@ import UIKit
 
 private let reuseIdentifier = "stickyBoard"
 
-class StickBoardCollectionViewController: UICollectionViewController {
+class StickyBoardCollectionViewController: UICollectionViewController {
 
     @IBOutlet weak var stickyBoardCollectionView: UICollectionView!
 
