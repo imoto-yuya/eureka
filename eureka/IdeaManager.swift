@@ -29,14 +29,12 @@ class IdeaManager {
         } catch {
             print("Fetching Failed")
         }
-    }
 
-    func fetchAllIdea() {
-        let fetchRequest: NSFetchRequest<Idea> = Idea.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "groupID", ascending: true)]
+        let allfetchRequest: NSFetchRequest<Idea> = Idea.fetchRequest()
+        allfetchRequest.sortDescriptors = [NSSortDescriptor(key: "groupID", ascending: true)]
         do {
             allIdeaList = []
-            allIdeaList = try context.fetch(fetchRequest)
+            allIdeaList = try context.fetch(allfetchRequest)
         } catch {
             print("Fetching Failed")
         }

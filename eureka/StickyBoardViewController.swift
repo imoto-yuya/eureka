@@ -39,7 +39,6 @@ class StickyBoardViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         ideaManager.fetchIdea()
-        ideaManager.fetchAllIdea()
         // Screen Size の取得
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
@@ -80,7 +79,6 @@ class StickyBoardViewController: UIViewController {
         // #selectorで通知後に動く関数を指定。name:は型推論可(".UIDeviceOrientationDidChange")
         NotificationCenter.default.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
         ideaManager.fetchIdea()
-        ideaManager.fetchAllIdea()
     }
 
     override func didMove(toParentViewController parent: UIViewController?) {

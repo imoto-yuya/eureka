@@ -30,7 +30,7 @@ class StickyBoardCollectionViewController: UICollectionViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        ideaManager.fetchAllIdea()
+        ideaManager.fetchIdea()
     }
 
     override func didReceiveMemoryWarning() {
