@@ -18,6 +18,9 @@ func +(_ left:CGPoint, _ right:CGPoint)->CGPoint{
 }
 
 class StickyBoardViewController: UIViewController {
+
+    @IBOutlet weak var saveButtonItem: UIBarButtonItem!
+
     var ideaManager = IdeaManager.ideaManager
     var screenWidth: CGFloat = 0
     var screenHeight: CGFloat = 0
@@ -38,6 +41,7 @@ class StickyBoardViewController: UIViewController {
         let rootViewController = self.navigationController?.viewControllers.first
         self.navigationController?.setViewControllers([rootViewController!, self], animated:true)
         self.navigationItem.title = self.groupName
+        self.saveButtonItem.title = self.isNew ? "Save" : "Rename"
 
         // Do any additional setup after loading the view.
         ideaManager.fetchIdea()
@@ -147,6 +151,30 @@ class StickyBoardViewController: UIViewController {
     }
 
     @IBAction func saveButton(_ sender: UIBarButtonItem) {
-        ideaManager.saveIdea(groupID, "idea" + groupID.description)
+        let buttonName = self.isNew ? "Save" : "Rename"
+        let alertController = UIAlertController(title: buttonName, message: "", preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
+            if self.isNew {
+                textField.placeholder = "Input name"
+            } else {
+                textField.text = self.groupName
+            }
+        })
+
+        // Save/Renameボタンを追加
+        let addAction = UIAlertAction(title: buttonName, style: UIAlertActionStyle.default) { (action: UIAlertAction) in
+            if let textField = alertController.textFields?.first {
+                self.groupName = textField .text!
+                self.ideaManager.saveIdea(self.groupID, self.groupName)
+                self.navigationItem.title = self.groupName
+            }
+        }
+        alertController.addAction(addAction)
+
+        // Cancelボタンを追加
+        let cancelAction = UIAlertAction(title: "CANCEL", style: UIAlertActionStyle.cancel, handler: nil)
+        alertController.addAction(cancelAction)
+
+        present(alertController, animated: true, completion: nil)
     }
 }

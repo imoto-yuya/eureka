@@ -105,6 +105,9 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="WV6-9W-HLf"/>
                     </view>
+                    <connections>
+                        <outlet property="saveButtonItem" destination="jlE-uh-tNj" id="MYu-cd-I3f"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gfP-Ih-jK3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
