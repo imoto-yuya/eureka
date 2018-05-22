@@ -99,7 +99,12 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 
     // 編集モードのときのみ削除許可
     func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
-        return tableView.isEditing ? UITableViewCellEditingStyle.delete : UITableViewCellEditingStyle.none
+        //return tableView.isEditing ? UITableViewCellEditingStyle.delete : UITableViewCellEditingStyle.none
+        return UITableViewCellEditingStyle.none
+    }
+
+    func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        return false
     }
 
     // セルの削除処理
