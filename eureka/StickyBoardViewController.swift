@@ -24,6 +24,7 @@ class StickyBoardViewController: UIViewController {
     var sizeRatio: Float = 1
     var tempIdea: [Idea] = []
     var groupID: Int16 = 0
+    var groupName: String = ""
     var isNew: Bool = true
 
     // タッチ開始時のUIViewのorigin
@@ -36,6 +37,7 @@ class StickyBoardViewController: UIViewController {
 
         let rootViewController = self.navigationController?.viewControllers.first
         self.navigationController?.setViewControllers([rootViewController!, self], animated:true)
+        self.navigationItem.title = self.groupName
 
         // Do any additional setup after loading the view.
         ideaManager.fetchIdea()

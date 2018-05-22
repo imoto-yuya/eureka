@@ -16,6 +16,7 @@ class StickyBoardCollectionViewController: UICollectionViewController {
 
     var ideaManager = IdeaManager.ideaManager
     var selectedGroupID: Int16 = 0
+    var selectedGroupName: String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,6 +75,7 @@ class StickyBoardCollectionViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "IdeaList", style: .plain, target: nil, action: nil)
         self.selectedGroupID = ideaManager.groupList[indexPath.item].0
+        self.selectedGroupName = ideaManager.groupList[indexPath.item].1
         performSegue(withIdentifier: "toStickyBoard", sender: nil)
     }
 
@@ -82,6 +84,7 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         if segue.identifier == "toStickyBoard" {
             let vc = segue.destination as! StickyBoardViewController
             vc.groupID = self.selectedGroupID
+            vc.groupName = self.selectedGroupName
             vc.isNew = false
         }
     }

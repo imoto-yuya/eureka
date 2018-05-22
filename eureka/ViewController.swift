@@ -51,6 +51,7 @@ class ViewController: UIViewController {
                 selectedGroupID = (ideaManager.groupList.last?.0.advanced(by: 1))!
             }
             vc.groupID = selectedGroupID
+            vc.groupName = "New"
             vc.isNew = true
         }
     }
