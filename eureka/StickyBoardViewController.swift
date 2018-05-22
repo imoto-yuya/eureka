@@ -24,6 +24,7 @@ class StickyBoardViewController: UIViewController {
     var sizeRatio: Float = 1
     var tempIdea: [Idea] = []
     var groupID: Int16 = 0
+    var isNew: Bool = true
 
     // タッチ開始時のUIViewのorigin
     var orgOrigin: CGPoint!
@@ -49,23 +50,29 @@ class StickyBoardViewController: UIViewController {
             needNum = 20
         }
 
-        let random = RandomizedExtraction(ideaManager.ideas.count)
-        let indexList = random.getIndexList(needNum)
-        self.groupID = (ideaManager.groupList.last?.0.advanced(by: 1))!
+        if isNew {
+            let random = RandomizedExtraction(ideaManager.ideas.count)
+            let indexList = random.getIndexList(needNum)
+            for index in indexList {
+                let idea = ideaManager.copyIdea(index)
+                idea.groupID = self.groupID
+                tempIdea.append(idea)
+            }
+        } else {
+            tempIdea = ideaManager.getGroup(self.groupID)
+        }
 
-        for index in indexList {
-            let idea = ideaManager.copyIdea(index)
-            idea.groupID = self.groupID
+        for idea in tempIdea {
             let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*sizeRatio)
             let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*sizeRatio)
             let stickyView = DrawSticky(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), idea: idea)
-            stickyView.tag = tempIdea.count
+            stickyView.tag = tempIdea.index(of: idea)!
+
             let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, Float(stickyWidth))
             let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, Float(stickyHeight))
             stickyView.center = CGPoint(x: stickyX, y: stickyY)
             stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(handlePanGesture)))
             self.view.addSubview(stickyView)
-            tempIdea.append(idea)
         }
     }
 
@@ -77,7 +84,7 @@ class StickyBoardViewController: UIViewController {
     }
 
     override func didMove(toParentViewController parent: UIViewController?) {
-        if parent == nil {
+        if parent == nil && self.isNew{
             ideaManager.deleteGroup(self.groupID, force: false)
         }
     }

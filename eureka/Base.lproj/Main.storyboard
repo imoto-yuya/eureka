@@ -25,7 +25,7 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="ayu-aT-VyC"/>
                                     <barButtonItem title="Sticky board" id="UVQ-kg-VGi">
                                         <connections>
-                                            <segue destination="Nss-AK-Fql" kind="show" id="Rzx-EF-UKd"/>
+                                            <segue destination="Nss-AK-Fql" kind="show" identifier="list2StickyBoard" id="Rzx-EF-UKd"/>
                                         </connections>
                                     </barButtonItem>
                                 </items>

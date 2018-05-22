@@ -77,6 +77,15 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         performSegue(withIdentifier: "toStickyBoard", sender: nil)
     }
 
+    // 画面遷移先のViewControllerを取得し、データを渡す
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toStickyBoard" {
+            let vc = segue.destination as! StickyBoardViewController
+            vc.groupID = self.selectedGroupID
+            vc.isNew = false
+        }
+    }
+
     // MARK: UICollectionViewDelegate
 
     /*

@@ -144,4 +144,14 @@ class IdeaManager {
         }
         (UIApplication.shared.delegate as! AppDelegate).saveContext()
     }
+
+    func getGroup(_ groupID: Int16) -> [Idea]{
+        var ideaList: [Idea] = []
+        for idea in allIdeaList {
+            if idea.groupID == groupID {
+                ideaList.append(idea)
+            }
+        }
+        return ideaList
+    }
 }

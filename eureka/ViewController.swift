@@ -42,6 +42,19 @@ class ViewController: UIViewController {
         self.ideaTableView.setEditing(editing, animated: animated)
     }
 
+    // 画面遷移先のViewControllerを取得し、データを渡す
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "list2StickyBoard" {
+            let vc = segue.destination as! StickyBoardViewController
+            var selectedGroupID: Int16 = 1
+            if ideaManager.groupList.count > 0 {
+                selectedGroupID = (ideaManager.groupList.last?.0.advanced(by: 1))!
+            }
+            vc.groupID = selectedGroupID
+            vc.isNew = true
+        }
+    }
+
     @IBAction func addIdeaButton(_ sender: Any) {
         let alertController = UIAlertController(title: "Add Idea", message: "", preferredStyle: UIAlertControllerStyle.alert)
         alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
