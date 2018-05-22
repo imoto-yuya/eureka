@@ -51,6 +51,15 @@ class IdeaManager {
                 groupList.append((idea.groupID, idea.groupName!))
                 tempGroupID = idea.groupID
             }
+            // todo: 二分探索にする
+            // todo: 別メソッドにする. 付箋ボードビューでのみ名前の同期が必要
+            if idea.groupID > 0 {
+                for idea0 in self.ideas {
+                    if idea.id == idea0.id {
+                        idea.name = idea0.name
+                    }
+                }
+            }
         }
         print(temp)
     }
