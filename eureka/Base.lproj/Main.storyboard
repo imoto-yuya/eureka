@@ -19,17 +19,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DN6-E7-Kup">
-                                <rect key="frame" x="0.0" y="623" width="375" height="44"/>
-                                <items>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="ayu-aT-VyC"/>
-                                    <barButtonItem title="Sticky board" id="UVQ-kg-VGi">
-                                        <connections>
-                                            <segue destination="Nss-AK-Fql" kind="show" identifier="list2StickyBoard" id="Rzx-EF-UKd"/>
-                                        </connections>
-                                    </barButtonItem>
-                                </items>
-                            </toolbar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="e2z-iv-Qx6">
                                 <rect key="frame" x="0.0" y="64" width="375" height="559"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -47,16 +36,24 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="e2z-iv-Qx6" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="6hs-Iq-SRp"/>
                             <constraint firstItem="e2z-iv-Qx6" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" id="70l-GG-lk9"/>
-                            <constraint firstItem="DN6-E7-Kup" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="7U1-SE-Vby"/>
-                            <constraint firstItem="DN6-E7-Kup" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="LS2-af-P9T"/>
+                            <constraint firstItem="e2z-iv-Qx6" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="9Is-Yr-R0v"/>
+                            <constraint firstItem="e2z-iv-Qx6" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="DRd-LE-BJv"/>
                             <constraint firstItem="e2z-iv-Qx6" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="i1z-fL-nQd"/>
-                            <constraint firstItem="DN6-E7-Kup" firstAttribute="top" secondItem="e2z-iv-Qx6" secondAttribute="bottom" id="omN-Z1-oau"/>
-                            <constraint firstItem="DN6-E7-Kup" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="ttL-JI-1lk"/>
+                            <constraint firstItem="e2z-iv-Qx6" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="jJn-MN-Egj"/>
                             <constraint firstItem="e2z-iv-Qx6" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="wOn-YT-pO0"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <toolbarItems>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="ayu-aT-VyC"/>
+                        <barButtonItem title="Sticky board" id="UVQ-kg-VGi">
+                            <connections>
+                                <segue destination="Nss-AK-Fql" kind="show" identifier="list2StickyBoard" id="Rzx-EF-UKd"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
                     <navigationItem key="navigationItem" title="eureka" id="HD0-6d-JZ1">
                         <barButtonItem key="leftBarButtonItem" systemItem="add" id="Wdf-Km-VlX">
                             <connections>
@@ -64,6 +61,7 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="ideaTableView" destination="e2z-iv-Qx6" id="ImC-xz-KIc"/>
                     </connections>
@@ -79,32 +77,23 @@
                     <view key="view" contentMode="scaleToFill" id="Upc-6h-FZy">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0lM-77-1Vn">
-                                <rect key="frame" x="0.0" y="623" width="375" height="44"/>
-                                <items>
-                                    <barButtonItem title="Save" id="jlE-uh-tNj">
-                                        <connections>
-                                            <action selector="saveButton:" destination="Nss-AK-Fql" id="qt1-Tf-unS"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="TAV-SY-Idh"/>
-                                    <barButtonItem title="All board" id="GRz-b7-YtT">
-                                        <connections>
-                                            <segue destination="nld-OB-m3N" kind="show" id="NT1-yt-0rQ"/>
-                                        </connections>
-                                    </barButtonItem>
-                                </items>
-                            </toolbar>
-                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="0lM-77-1Vn" firstAttribute="trailing" secondItem="WV6-9W-HLf" secondAttribute="trailing" id="BPy-wr-4DH"/>
-                            <constraint firstItem="0lM-77-1Vn" firstAttribute="leading" secondItem="WV6-9W-HLf" secondAttribute="leading" id="GKB-Ke-bhq"/>
-                            <constraint firstItem="0lM-77-1Vn" firstAttribute="bottom" secondItem="WV6-9W-HLf" secondAttribute="bottom" id="SEn-j7-O1E"/>
-                        </constraints>
                         <viewLayoutGuide key="safeArea" id="WV6-9W-HLf"/>
                     </view>
+                    <toolbarItems>
+                        <barButtonItem title="Save" id="jlE-uh-tNj">
+                            <connections>
+                                <action selector="saveButton:" destination="Nss-AK-Fql" id="qt1-Tf-unS"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="TAV-SY-Idh"/>
+                        <barButtonItem title="All board" id="GRz-b7-YtT">
+                            <connections>
+                                <segue destination="nld-OB-m3N" kind="show" id="NT1-yt-0rQ"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="saveButtonItem" destination="jlE-uh-tNj" id="MYu-cd-I3f"/>
                     </connections>
@@ -167,13 +156,17 @@
         <!--Navigation Controller-->
         <scene sceneID="Y1n-d0-SAt">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="8uR-fE-m5V" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" toolbarHidden="NO" id="8uR-fE-m5V" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="8f5-eI-MHP">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
+                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="p1t-uu-z4X">
+                        <rect key="frame" x="0.0" y="623" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </toolbar>
                     <connections>
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="dZh-aH-jeX"/>
                     </connections>

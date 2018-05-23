@@ -31,6 +31,8 @@ class StickyBoardCollectionViewController: UICollectionViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.hidesBarsOnSwipe = false
+        self.navigationController?.hidesBarsOnTap = false
         ideaManager.fetchIdea()
     }
 
