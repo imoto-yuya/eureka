@@ -26,8 +26,8 @@ class ViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.setNavigationBarHidden(false, animated: false)
-        self.navigationController?.hidesBarsOnSwipe = true
-        self.navigationController?.hidesBarsOnTap = true
+        self.navigationController?.hidesBarsOnSwipe = false
+        self.navigationController?.hidesBarsOnTap = false
         // CoreDataからデータをfetchしてくる
         ideaManager.fetchIdea()
         // taskTableViewを再読み込みする
