@@ -68,6 +68,9 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! StickyBoardCollectionViewCell
 
         // Configure the cell
+        let imageView = cell.contentView.viewWithTag(1) as! UIImageView
+        let cellImage = UIImage(named: "Image")
+        imageView.image = cellImage
         cell.name.text = ideaManager.groupList[indexPath.item].1
 
         return cell
