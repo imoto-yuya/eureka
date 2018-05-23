@@ -61,6 +61,8 @@ class StickyBoardViewController: UIViewController {
             for index in indexList {
                 let idea = ideaManager.copyIdea(index)
                 idea.groupID = self.groupID
+                idea.xRatio = Float(arc4random_uniform(201))/100 - 1
+                idea.yRatio = Float(arc4random_uniform(201))/100 - 1
                 tempIdea.append(idea)
             }
         } else {
