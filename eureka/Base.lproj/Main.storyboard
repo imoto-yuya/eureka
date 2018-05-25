@@ -128,13 +128,6 @@
                                             <rect key="frame" x="13" y="18" width="156" height="156"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NcG-7C-dL5">
-                                            <rect key="frame" x="13" y="176" width="156" height="30"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
                                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LUS-gO-vho">
                                             <rect key="frame" x="19" y="25" width="24" height="24"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -143,11 +136,21 @@
                                                 <action selector="tapDeleteButton:" destination="nld-OB-m3N" eventType="touchUpInside" id="uiw-jQ-b3o"/>
                                             </connections>
                                         </button>
+                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jeu-cc-doC">
+                                            <rect key="frame" x="13" y="176" width="156" height="30"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <state key="normal" title="Name">
+                                                <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="tapEditNameButton:" destination="nld-OB-m3N" eventType="touchUpInside" id="YhU-Ao-Yvg"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                 </view>
                                 <connections>
                                     <outlet property="deleteButton" destination="LUS-gO-vho" id="AOc-Qe-ief"/>
-                                    <outlet property="name" destination="NcG-7C-dL5" id="5s4-9u-HeT"/>
+                                    <outlet property="nameButton" destination="Jeu-cc-doC" id="7x3-az-ZuN"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>

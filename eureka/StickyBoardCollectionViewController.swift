@@ -81,41 +81,22 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         let imageView = cell.contentView.viewWithTag(1) as! UIImageView
         let cellImage = UIImage(named: "Image")
         imageView.image = cellImage
-        cell.name.text = ideaManager.groupList[indexPath.item].1
+        let groupID = Int(ideaManager.groupList[indexPath.item].0)
+        let groupName = ideaManager.groupList[indexPath.item].1
         cell.deleteButton.isHidden = self.isEditing ? false : true
-        cell.deleteButton.tag = Int(ideaManager.groupList[indexPath.item].0)
+        cell.deleteButton.tag = groupID
+        cell.nameButton.isEnabled = self.isEditing ? true : false
+        cell.nameButton.setTitle(groupName, for: UIControlState.normal)
+        cell.nameButton.tag = groupID
 
         return cell
     }
 
     // cell選択時
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.selectedGroupID = ideaManager.groupList[indexPath.item].0
-        self.selectedGroupName = ideaManager.groupList[indexPath.item].1
-        if self.isEditing {
-            let alertController = UIAlertController(title: "Rename", message: "", preferredStyle: UIAlertControllerStyle.alert)
-            alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
-                textField.text = self.selectedGroupName
-            })
-
-            // Renameボタンを追加
-            let addAction = UIAlertAction(title: "Rename", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
-                if let textField = alertController.textFields?.first {
-                    self.selectedGroupName = textField.text!
-                    self.ideaManager.saveIdea(self.selectedGroupID, self.selectedGroupName)
-                    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! StickyBoardCollectionViewCell
-                    cell.name.text = self.selectedGroupName
-                    collectionView.reloadItems(at: [indexPath])
-                }
-            }
-            alertController.addAction(addAction)
-
-            // Cancelボタンを追加
-            let cancelAction = UIAlertAction(title: "CANCEL", style: UIAlertActionStyle.cancel, handler: nil)
-            alertController.addAction(cancelAction)
-
-            present(alertController, animated: true, completion: nil)
-        } else {
+        if !self.isEditing {
+            self.selectedGroupID = ideaManager.groupList[indexPath.item].0
+            self.selectedGroupName = ideaManager.groupList[indexPath.item].1
             navigationItem.backBarButtonItem = UIBarButtonItem(title: "IdeaList", style: .plain, target: nil, action: nil)
             performSegue(withIdentifier: "toStickyBoard", sender: nil)
         }
@@ -168,4 +149,30 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         self.stickyBoardCollectionView.reloadData()
     }
 
+    @IBAction func tapEditNameButton(_ sender: UIButton) {
+        if self.isEditing {
+            let groupID = sender.tag
+            let groupName = sender.titleLabel?.text
+            let alertController = UIAlertController(title: "Rename", message: "", preferredStyle: UIAlertControllerStyle.alert)
+            alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
+                textField.text = groupName
+            })
+
+            // Renameボタンを追加
+            let addAction = UIAlertAction(title: "Rename", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
+                if let textField = alertController.textFields?.first {
+                    let name = textField.text!
+                    self.ideaManager.saveIdea(Int16(groupID), name)
+                    sender.setTitle(name, for: UIControlState.normal)
+                }
+            }
+            alertController.addAction(addAction)
+
+            // Cancelボタンを追加
+            let cancelAction = UIAlertAction(title: "CANCEL", style: UIAlertActionStyle.cancel, handler: nil)
+            alertController.addAction(cancelAction)
+
+            present(alertController, animated: true, completion: nil)
+        }
+    }
 }
