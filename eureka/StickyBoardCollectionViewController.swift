@@ -75,6 +75,8 @@ class StickyBoardCollectionViewController: UICollectionViewController {
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        self.stickyBoardCollectionView.backgroundColor = self.isEditing ? UIColor(red: 0.886, green: 0.624, blue: 0.655, alpha: 1.0) : UIColor(red: 0.906, green: 0.906, blue: 0.886, alpha: 1.0)
+
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! StickyBoardCollectionViewCell
 
         // Configure the cell
