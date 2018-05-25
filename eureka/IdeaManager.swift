@@ -40,13 +40,7 @@ class IdeaManager {
         }
         var tempGroupID: Int16 = 0
         groupList = []
-        var temp: [Int16] = []
-        var temp2: Int16 = 0
         for idea in self.allIdeaList {
-            if idea.groupID != temp2 {
-                temp.append(idea.groupID)
-                temp2 = idea.groupID
-            }
             if idea.groupID != tempGroupID && idea.isSave {
                 groupList.append((idea.groupID, idea.groupName!))
                 tempGroupID = idea.groupID
@@ -61,7 +55,6 @@ class IdeaManager {
                 }
             }
         }
-        print(temp)
     }
 
     func updateOrder() {
@@ -136,7 +129,11 @@ class IdeaManager {
             if idea.groupID == groupID {
                 idea.groupName = groupName
                 idea.isSave = true
-                self.groupList.append((idea.groupID, idea.groupName!))
+                if let index = self.groupList.index(where: {$0.0 == groupID}) {
+                    self.groupList[index].1 = groupName
+                } else {
+                    self.groupList.append((idea.groupID, idea.groupName!))
+                }
             }
         }
         (UIApplication.shared.delegate as! AppDelegate).saveContext()

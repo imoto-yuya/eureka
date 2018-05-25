@@ -17,6 +17,7 @@ class StickyBoardCollectionViewController: UICollectionViewController {
     var ideaManager = IdeaManager.ideaManager
     var selectedGroupID: Int16 = 0
     var selectedGroupName: String = ""
+    var idEditing = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +29,8 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         // self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
 
         // Do any additional setup after loading the view.
+        //var editButton: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.edit, target: self, action: "editButton")
+        self.navigationItem.setRightBarButton(self.editButtonItem, animated: true)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -39,6 +42,12 @@ class StickyBoardCollectionViewController: UICollectionViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: true)
+        // 通常・編集モードの切り替え
+        self.idEditing = editing
     }
 
     /*
@@ -78,10 +87,35 @@ class StickyBoardCollectionViewController: UICollectionViewController {
 
     // cell選択時
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "IdeaList", style: .plain, target: nil, action: nil)
         self.selectedGroupID = ideaManager.groupList[indexPath.item].0
         self.selectedGroupName = ideaManager.groupList[indexPath.item].1
-        performSegue(withIdentifier: "toStickyBoard", sender: nil)
+        if self.isEditing {
+            let alertController = UIAlertController(title: "Rename", message: "", preferredStyle: UIAlertControllerStyle.alert)
+            alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
+                textField.text = self.selectedGroupName
+            })
+
+            // Renameボタンを追加
+            let addAction = UIAlertAction(title: "Rename", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
+                if let textField = alertController.textFields?.first {
+                    self.selectedGroupName = textField.text!
+                    self.ideaManager.saveIdea(self.selectedGroupID, self.selectedGroupName)
+                    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! StickyBoardCollectionViewCell
+                    cell.name.text = self.selectedGroupName
+                    collectionView.reloadItems(at: [indexPath])
+                }
+            }
+            alertController.addAction(addAction)
+
+            // Cancelボタンを追加
+            let cancelAction = UIAlertAction(title: "CANCEL", style: UIAlertActionStyle.cancel, handler: nil)
+            alertController.addAction(cancelAction)
+
+            present(alertController, animated: true, completion: nil)
+        } else {
+            navigationItem.backBarButtonItem = UIBarButtonItem(title: "IdeaList", style: .plain, target: nil, action: nil)
+            performSegue(withIdentifier: "toStickyBoard", sender: nil)
+        }
     }
 
     // 画面遷移先のViewControllerを取得し、データを渡す
