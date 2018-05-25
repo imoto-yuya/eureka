@@ -41,7 +41,13 @@ class StickyBoardViewController: UIViewController {
         let rootViewController = self.navigationController?.viewControllers.first
         self.navigationController?.setViewControllers([rootViewController!, self], animated:true)
         self.navigationItem.title = self.groupName
-        self.saveButtonItem.title = self.isNew ? "Save" : "Rename"
+        if self.isNew {
+            self.saveButtonItem.isEnabled = true
+            self.saveButtonItem.tintColor = nil
+        } else {
+            self.saveButtonItem.isEnabled = false
+            self.saveButtonItem.tintColor = UIColor(white: 0, alpha: 0)
+        }
 
         // Do any additional setup after loading the view.
         ideaManager.fetchIdea()
@@ -155,18 +161,13 @@ class StickyBoardViewController: UIViewController {
     }
 
     @IBAction func saveButton(_ sender: UIBarButtonItem) {
-        let buttonName = self.isNew ? "Save" : "Rename"
-        let alertController = UIAlertController(title: buttonName, message: "", preferredStyle: UIAlertControllerStyle.alert)
+        let alertController = UIAlertController(title: "Save", message: "", preferredStyle: UIAlertControllerStyle.alert)
         alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
-            if self.isNew {
-                textField.placeholder = "Input name"
-            } else {
-                textField.text = self.groupName
-            }
+            textField.placeholder = "Input name"
         })
 
-        // Save/Renameボタンを追加
-        let addAction = UIAlertAction(title: buttonName, style: UIAlertActionStyle.default) { (action: UIAlertAction) in
+        // Saveボタンを追加
+        let addAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
             if let textField = alertController.textFields?.first {
                 self.groupName = textField .text!
                 self.ideaManager.saveIdea(self.groupID, self.groupName)
