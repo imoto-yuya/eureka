@@ -172,6 +172,9 @@ class StickyBoardViewController: UIViewController {
                 self.groupName = textField .text!
                 self.ideaManager.saveIdea(self.groupID, self.groupName)
                 self.navigationItem.title = self.groupName
+                self.isNew = false
+                self.saveButtonItem.isEnabled = false
+                self.saveButtonItem.tintColor = UIColor(white: 0, alpha: 0)
             }
         }
         alertController.addAction(addAction)
