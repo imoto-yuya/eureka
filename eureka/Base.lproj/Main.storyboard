@@ -6,7 +6,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -33,13 +32,19 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3aX-Fb-AU3">
+                                <rect key="frame" x="163" y="575" width="48" height="48"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                                <state key="normal" image="EurekaIcon"/>
+                                <connections>
+                                    <segue destination="Nss-AK-Fql" kind="show" identifier="list2StickyBoard" id="X9I-RD-pAh"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="e2z-iv-Qx6" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="6hs-Iq-SRp"/>
-                            <constraint firstItem="e2z-iv-Qx6" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" id="70l-GG-lk9"/>
-                            <constraint firstItem="e2z-iv-Qx6" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="9Is-Yr-R0v"/>
-                            <constraint firstItem="e2z-iv-Qx6" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="DRd-LE-BJv"/>
                             <constraint firstItem="e2z-iv-Qx6" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="i1z-fL-nQd"/>
                             <constraint firstItem="e2z-iv-Qx6" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="jJn-MN-Egj"/>
                             <constraint firstItem="e2z-iv-Qx6" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="wOn-YT-pO0"/>
@@ -48,9 +53,9 @@
                     </view>
                     <toolbarItems>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="ayu-aT-VyC"/>
-                        <barButtonItem title="Sticky board" id="UVQ-kg-VGi">
+                        <barButtonItem title="Sticky board" image="ListIcon" id="UVQ-kg-VGi">
                             <connections>
-                                <segue destination="Nss-AK-Fql" kind="show" identifier="list2StickyBoard" id="Rzx-EF-UKd"/>
+                                <segue destination="nld-OB-m3N" kind="show" id="nh7-EQ-6KO"/>
                             </connections>
                         </barButtonItem>
                     </toolbarItems>
@@ -81,15 +86,9 @@
                         <viewLayoutGuide key="safeArea" id="WV6-9W-HLf"/>
                     </view>
                     <toolbarItems>
-                        <barButtonItem title="Save" id="jlE-uh-tNj">
+                        <barButtonItem title="Save" image="saveIcon" id="jlE-uh-tNj">
                             <connections>
                                 <action selector="saveButton:" destination="Nss-AK-Fql" id="qt1-Tf-unS"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem style="plain" systemItem="flexibleSpace" id="TAV-SY-Idh"/>
-                        <barButtonItem title="All board" id="GRz-b7-YtT">
-                            <connections>
-                                <segue destination="nld-OB-m3N" kind="show" id="NT1-yt-0rQ"/>
                             </connections>
                         </barButtonItem>
                     </toolbarItems>
@@ -166,7 +165,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IQC-w9-8ME" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2400.8000000000002" y="-561.76911544227892"/>
+            <point key="canvasLocation" x="686" y="183"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Y1n-d0-SAt">
@@ -193,8 +192,11 @@
     </scenes>
     <resources>
         <image name="DeleteIcon" width="24" height="24"/>
+        <image name="EurekaIcon" width="48" height="48"/>
+        <image name="ListIcon" width="24" height="24"/>
+        <image name="saveIcon" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="aud-zY-Rgg"/>
+        <segue reference="X9I-RD-pAh"/>
     </inferredMetricsTieBreakers>
 </document>

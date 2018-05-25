@@ -38,8 +38,8 @@ class StickyBoardViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let rootViewController = self.navigationController?.viewControllers.first
-        self.navigationController?.setViewControllers([rootViewController!, self], animated:true)
+        //let rootViewController = self.navigationController?.viewControllers.first
+        //self.navigationController?.setViewControllers([rootViewController!, self], animated:true)
         self.navigationItem.title = self.groupName
         if self.isNew {
             self.saveButtonItem.isEnabled = true
