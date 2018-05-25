@@ -135,9 +135,18 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LUS-gO-vho">
+                                            <rect key="frame" x="19" y="25" width="24" height="24"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <state key="normal" image="DeleteIcon"/>
+                                            <connections>
+                                                <action selector="tapDeleteButton:" destination="nld-OB-m3N" eventType="touchUpInside" id="uiw-jQ-b3o"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                 </view>
                                 <connections>
+                                    <outlet property="deleteButton" destination="LUS-gO-vho" id="AOc-Qe-ief"/>
                                     <outlet property="name" destination="NcG-7C-dL5" id="5s4-9u-HeT"/>
                                 </connections>
                             </collectionViewCell>
@@ -179,6 +188,9 @@
             <point key="canvasLocation" x="-154.40000000000001" y="-564.46776611694156"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="DeleteIcon" width="24" height="24"/>
+    </resources>
     <inferredMetricsTieBreakers>
         <segue reference="aud-zY-Rgg"/>
     </inferredMetricsTieBreakers>

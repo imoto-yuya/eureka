@@ -10,4 +10,5 @@ import UIKit
 
 class StickyBoardCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var name: UILabel!
+    @IBOutlet weak var deleteButton: UIButton!
 }

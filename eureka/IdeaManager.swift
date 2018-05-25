@@ -144,6 +144,9 @@ class IdeaManager {
             let isDelete = force ? true : !idea.isSave
             if idea.groupID == groupID && isDelete {
                 context.delete(idea)
+                if let index = self.groupList.index(where: {$0.0 == groupID}) {
+                    self.groupList.remove(at: index)
+                }
             }
         }
         (UIApplication.shared.delegate as! AppDelegate).saveContext()

@@ -48,6 +48,7 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         super.setEditing(editing, animated: true)
         // 通常・編集モードの切り替え
         self.idEditing = editing
+        self.stickyBoardCollectionView.reloadData()
     }
 
     /*
@@ -81,6 +82,8 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         let cellImage = UIImage(named: "Image")
         imageView.image = cellImage
         cell.name.text = ideaManager.groupList[indexPath.item].1
+        cell.deleteButton.isHidden = self.isEditing ? false : true
+        cell.deleteButton.tag = Int(ideaManager.groupList[indexPath.item].0)
 
         return cell
     }
@@ -158,5 +161,11 @@ class StickyBoardCollectionViewController: UICollectionViewController {
 
     }
     */
+
+    @IBAction func tapDeleteButton(_ sender: UIButton) {
+        self.selectedGroupID = Int16(sender.tag)
+        ideaManager.deleteGroup(self.selectedGroupID, force: true)
+        self.stickyBoardCollectionView.reloadData()
+    }
 
 }
