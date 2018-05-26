@@ -2,17 +2,15 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "baseline_error_black_48pt_1x.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "baseline_error_black_48pt_2x.png",
+      "filename" : "lightBulb.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "baseline_error_black_48pt_3x.png",
       "scale" : "3x"
     }
   ],

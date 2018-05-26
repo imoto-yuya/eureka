@@ -11,11 +11,18 @@ import UIKit
 class ViewController: UIViewController {
 
     @IBOutlet weak var ideaTableView: UITableView!
+
+    var eurekaButton: UIButton!
     var ideaManager = IdeaManager.ideaManager
 
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "IdeaList", style: .plain, target: nil, action: nil)
+
+        let radius: CGFloat = 80
+        self.eurekaButton = UIButton(frame: CGRect(x: 0, y: 0, width: radius, height: radius))
+        self.eurekaButton.setImage(UIImage(named: "EurekaIcon"), for: UIControlState())
+        self.eurekaButton.addTarget(self, action: #selector(transitStickyBoard), for: .touchUpInside)
 
         // Do any additional setup after loading the view, typically from a nib.
         self.ideaTableView.dataSource = self
@@ -28,10 +35,15 @@ class ViewController: UIViewController {
         self.navigationController?.setNavigationBarHidden(false, animated: false)
         self.navigationController?.hidesBarsOnSwipe = false
         self.navigationController?.hidesBarsOnTap = false
+        self.navigationController?.view.addSubview(self.eurekaButton)
+        // #selectorで通知後に動く関数を指定。name:は型推論可(".UIDeviceOrientationDidChange")
+        NotificationCenter.default.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
         // CoreDataからデータをfetchしてくる
         ideaManager.fetchIdea()
         // taskTableViewを再読み込みする
         ideaTableView.reloadData()
+
+        updateEurekaButtonPosition()
     }
 
     override func didReceiveMemoryWarning() {
@@ -56,6 +68,7 @@ class ViewController: UIViewController {
             vc.groupName = "New"
             vc.isNew = true
         }
+        self.navigationController?.view.subviews.last?.removeFromSuperview()
     }
 
     @IBAction func addIdeaButton(_ sender: Any) {
@@ -80,6 +93,19 @@ class ViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
 
+    @objc func changeDirection(notification: NSNotification){
+        updateEurekaButtonPosition()
+    }
+
+    @objc func transitStickyBoard(sender: Any) {
+        performSegue(withIdentifier: "list2StickyBoard", sender: nil)
+    }
+
+    func updateEurekaButtonPosition() {
+        let posX = self.view.bounds.width/2
+        let posY = self.view.bounds.height - self.eurekaButton.frame.height
+        self.eurekaButton.center = CGPoint(x: posX, y: posY)
+    }
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {

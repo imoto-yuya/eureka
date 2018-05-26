@@ -32,15 +32,6 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3aX-Fb-AU3">
-                                <rect key="frame" x="163" y="575" width="48" height="48"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="19"/>
-                                <state key="normal" image="EurekaIcon"/>
-                                <connections>
-                                    <segue destination="Nss-AK-Fql" kind="show" identifier="list2StickyBoard" id="X9I-RD-pAh"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -69,6 +60,7 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="ideaTableView" destination="e2z-iv-Qx6" id="ImC-xz-KIc"/>
+                        <segue destination="Nss-AK-Fql" kind="show" identifier="list2StickyBoard" id="x8P-HV-heu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -192,11 +184,10 @@
     </scenes>
     <resources>
         <image name="DeleteIcon" width="24" height="24"/>
-        <image name="EurekaIcon" width="48" height="48"/>
         <image name="ListIcon" width="24" height="24"/>
         <image name="saveIcon" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="X9I-RD-pAh"/>
+        <segue reference="x8P-HV-heu"/>
     </inferredMetricsTieBreakers>
 </document>
