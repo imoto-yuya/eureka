@@ -36,15 +36,17 @@ class ViewController: UIViewController {
         self.navigationController?.setNavigationBarHidden(false, animated: false)
         self.navigationController?.hidesBarsOnSwipe = false
         self.navigationController?.hidesBarsOnTap = false
-        self.navigationController?.view.addSubview(self.eurekaButton)
         // #selectorで通知後に動く関数を指定。name:は型推論可(".UIDeviceOrientationDidChange")
         NotificationCenter.default.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
         // CoreDataからデータをfetchしてくる
         ideaManager.fetchIdea()
         // taskTableViewを再読み込みする
         ideaTableView.reloadData()
+    }
 
+    override func viewDidAppear(_ animated: Bool) {
         updateEurekaButtonPosition()
+        self.navigationController?.view.addSubview(self.eurekaButton)
     }
 
     override func didReceiveMemoryWarning() {
