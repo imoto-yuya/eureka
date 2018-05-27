@@ -17,7 +17,8 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "IdeaList", style: .plain, target: nil, action: nil)
+        self.navigationItem.title = "Materials"
+        //navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
 
         let radius: CGFloat = 80
         self.eurekaButton = UIButton(frame: CGRect(x: 0, y: 0, width: radius, height: radius))

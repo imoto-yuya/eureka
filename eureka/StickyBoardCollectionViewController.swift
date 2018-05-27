@@ -31,6 +31,7 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         // Do any additional setup after loading the view.
         //var editButton: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.edit, target: self, action: "editButton")
         self.navigationItem.setRightBarButton(self.editButtonItem, animated: true)
+        self.navigationItem.title = "Ideas"
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -99,7 +100,7 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         if !self.isEditing {
             self.selectedGroupID = ideaManager.groupList[indexPath.item].0
             self.selectedGroupName = ideaManager.groupList[indexPath.item].1
-            navigationItem.backBarButtonItem = UIBarButtonItem(title: "IdeaList", style: .plain, target: nil, action: nil)
+            //navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
             performSegue(withIdentifier: "toStickyBoard", sender: nil)
         }
     }
