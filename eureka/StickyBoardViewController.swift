@@ -41,13 +41,6 @@ class StickyBoardViewController: UIViewController {
         //let rootViewController = self.navigationController?.viewControllers.first
         //self.navigationController?.setViewControllers([rootViewController!, self], animated:true)
         self.navigationItem.title = self.groupName
-        if self.isNew {
-            self.saveButtonItem.isEnabled = true
-            self.saveButtonItem.tintColor = nil
-        } else {
-            self.saveButtonItem.isEnabled = false
-            self.saveButtonItem.tintColor = UIColor(white: 0, alpha: 0)
-        }
 
         // Do any additional setup after loading the view.
         ideaManager.fetchIdea()
@@ -62,6 +55,8 @@ class StickyBoardViewController: UIViewController {
         }
 
         if isNew {
+            self.saveButtonItem.isEnabled = true
+            self.saveButtonItem.tintColor = nil
             let random = RandomizedExtraction(ideaManager.ideas.count)
             let indexList = random.getIndexList(needNum)
             for index in indexList {
@@ -72,6 +67,8 @@ class StickyBoardViewController: UIViewController {
                 tempIdea.append(idea)
             }
         } else {
+            self.saveButtonItem.isEnabled = false
+            self.saveButtonItem.tintColor = UIColor(white: 0, alpha: 0)
             tempIdea = ideaManager.getGroup(self.groupID)
         }
 
