@@ -83,6 +83,13 @@
                                 <action selector="saveButton:" destination="Nss-AK-Fql" id="qt1-Tf-unS"/>
                             </connections>
                         </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="YxF-a1-GbA"/>
+                        <barButtonItem systemItem="add" id="uXl-My-slb">
+                            <connections>
+                                <action selector="addMemoButton:" destination="Nss-AK-Fql" id="HR7-9E-z71"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="ZZ6-G0-e0p"/>
                     </toolbarItems>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>

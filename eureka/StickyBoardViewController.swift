@@ -182,4 +182,37 @@ class StickyBoardViewController: UIViewController {
 
         present(alertController, animated: true, completion: nil)
     }
+
+    @IBAction func addMemoButton(_ sender: UIBarButtonItem) {
+        let alertController = UIAlertController(title: "Add memo", message: "", preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
+            textField.placeholder = "Input memo"
+        })
+
+        // Addボタンを追加
+        let addAction = UIAlertAction(title: "Add", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
+            if let textField = alertController.textFields?.first {
+                let idea = self.ideaManager.addNewMemo(textField.text!, self.groupID)
+                self.tempIdea.append(idea)
+
+                let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*self.sizeRatio)
+                let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*self.sizeRatio)
+                let stickyView = DrawSticky(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), idea: idea)
+                stickyView.tag = self.tempIdea.index(of: idea)!
+
+                let stickyX: CGFloat = self.calculateCoordinate(Float(self.screenWidth), idea.xRatio, Float(stickyWidth))
+                let stickyY: CGFloat = self.calculateCoordinate(Float(self.screenHeight), idea.yRatio, Float(stickyHeight))
+                stickyView.center = CGPoint(x: stickyX, y: stickyY)
+                stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(self.handlePanGesture)))
+                self.view.addSubview(stickyView)
+            }
+        }
+        alertController.addAction(addAction)
+
+        // Cancelボタンを追加
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+        alertController.addAction(cancelAction)
+
+        present(alertController, animated: true, completion: nil)
+    }
 }

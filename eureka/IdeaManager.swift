@@ -101,6 +101,7 @@ class IdeaManager {
         idea.id = NSUUID() as UUID
         idea.groupID = 0
         idea.isSave = false
+        idea.isMemo = false
         idea.name = name
         idea.xRatio = 0
         idea.yRatio = 0
@@ -122,6 +123,26 @@ class IdeaManager {
         let idea = copyIdea(sourceIndexPath)
         deleteIdea(sourceIndexPath)
         insertIdea(idea, destinationIndexPath)
+    }
+
+    func addNewMemo(_ contents: String, _ groupID: Int16) -> Idea {
+        let idea = Idea(context: context)
+        idea.id = NSUUID() as UUID
+        idea.groupID = groupID
+        idea.isSave = false
+        idea.isMemo = true
+        idea.name = contents
+        idea.xRatio = 0
+        idea.yRatio = 0
+        idea.stickyFontSize = 16
+        idea.stickyWidth = 200
+        idea.stickyHeight = 30
+        idea.stickyRGBRed = 1
+        idea.stickyRGBGreen = 1
+        idea.stickyRGBBlue = 1
+        self.allIdeaList.append(idea)
+        (UIApplication.shared.delegate as! AppDelegate).saveContext()
+        return idea
     }
 
     func saveIdea(_ groupID: Int16, _ groupName: String) {
