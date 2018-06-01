@@ -17,19 +17,6 @@ func +(_ left:CGPoint, _ right:CGPoint)->CGPoint{
     return CGPoint(x:left.x + right.x, y:left.y + right.y)
 }
 
-extension UIView {
-    func find(_ tag: Int) -> UIView {
-        var returnView = UIView()
-
-        for subview in self.subviews {
-            if subview.tag == tag {
-                returnView = subview
-            }
-        }
-        return returnView
-    }
-}
-
 class StickyBoardViewController: UIViewController {
 
     @IBOutlet weak var saveButtonItem: UIBarButtonItem!
@@ -204,7 +191,8 @@ class StickyBoardViewController: UIViewController {
             if let textField = alertController.textFields?.first {
                 idea.name = textField.text!
                 self.ideaManager.editIdea(idea.name!, idea.id!)
-                self.view.find(sender.tag).removeFromSuperview()
+                // tagは重複しないことを想定
+                self.view.subviews[self.view.subviews.index(where: {$0.tag == sender.tag})!].removeFromSuperview()
                 self.addStickyNoteToView(idea)
             }
         }
@@ -218,7 +206,7 @@ class StickyBoardViewController: UIViewController {
     }
 
     @objc func deleteStickyNote(_ sender: UIButton) {
-        self.view.find(sender.tag).removeFromSuperview()
+        self.view.subviews[self.view.subviews.index(where: {$0.tag == sender.tag})!].removeFromSuperview()
         let index = tempIdea.index(where: {$0.order == sender.tag})!
         self.ideaManager.deleteIdea(self.tempIdea[index].id!)
         self.tempIdea.remove(at: index)
