@@ -11,13 +11,20 @@ import UIKit
 class DrawSticky: UITextView {
     var idea: Idea!
 
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
+    // 入力カーソル非表示
+    override func caretRect(for position: UITextPosition) -> CGRect {
+        return CGRect.zero
     }
-    */
+
+    // 範囲選択カーソル非表示
+    override func selectionRects(for range: UITextRange) -> [Any] {
+        return []
+    }
+
+    // コピー・ペースト・選択等のメニュー非表示
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        return false
+    }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -36,7 +43,6 @@ class DrawSticky: UITextView {
         self.backgroundColor = UIColor(red: CGFloat(idea.stickyRGBRed), green: CGFloat(idea.stickyRGBGreen), blue: CGFloat(idea.stickyRGBBlue), alpha: 1.0)
         self.layer.borderWidth = 2.0
         self.layer.borderColor = UIColor.white.cgColor
-        self.tag = Int(idea.order)
         self.isEditable = false
     }
 
