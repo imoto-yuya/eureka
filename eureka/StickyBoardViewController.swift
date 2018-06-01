@@ -215,8 +215,9 @@ class StickyBoardViewController: UIViewController {
     }
 
     @objc func deleteStickyNote(_ sender: UIButton) {
-        self.tempIdea.remove(at: sender.tag)
         self.view.find(sender.tag).removeFromSuperview()
+        self.ideaManager.deleteIdea(self.tempIdea[sender.tag].id!)
+        self.tempIdea.remove(at: sender.tag)
     }
 
     func calculateCoordinate(_ screenLength: Float, _ ratio: Float, _ stickyLength: Float) -> CGFloat {
