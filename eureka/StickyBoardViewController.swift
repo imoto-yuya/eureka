@@ -17,6 +17,19 @@ func +(_ left:CGPoint, _ right:CGPoint)->CGPoint{
     return CGPoint(x:left.x + right.x, y:left.y + right.y)
 }
 
+extension UIView {
+    func find(_ tag: Int) -> UIView {
+        var returnView = UIView()
+
+        for subview in self.subviews {
+            if subview.tag == tag {
+                returnView = subview
+            }
+        }
+        return returnView
+    }
+}
+
 class StickyBoardViewController: UIViewController {
 
     @IBOutlet weak var saveButtonItem: UIBarButtonItem!
@@ -73,16 +86,7 @@ class StickyBoardViewController: UIViewController {
         }
 
         for idea in tempIdea {
-            let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*sizeRatio)
-            let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*sizeRatio)
-            let stickyView = DrawSticky(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), idea: idea)
-            stickyView.tag = tempIdea.index(of: idea)!
-
-            let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, Float(stickyWidth))
-            let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, Float(stickyHeight))
-            stickyView.center = CGPoint(x: stickyX, y: stickyY)
-            stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(handlePanGesture)))
-            self.view.addSubview(stickyView)
+            self.addStickyNoteToView(idea)
         }
     }
 
@@ -138,6 +142,31 @@ class StickyBoardViewController: UIViewController {
         }
     }
 
+    @objc func handleLongPressGesture(sender: UITapGestureRecognizer) {
+        if sender.state == UIGestureRecognizerState.began {
+            let idea = self.tempIdea[(sender.view?.tag)!]
+            let isMemo = idea.isMemo
+            let width = isMemo ? 240 : 160
+            let menu = PopoverMenuController()
+            menu.prepare(at: sender.view!)
+            menu.viewSize = CGSize(width: width, height: 40)
+            self.present(menu, animated: true, completion: {
+                var button = UIButton()
+                button = menu.addItem(withTitle: "Copy")
+                button.tag = (sender.view?.tag)!
+                button.addTarget(self, action: #selector(self.copyStickyNote), for: .touchUpInside)
+                button = menu.addItem(withTitle: "Edit")
+                button.tag = (sender.view?.tag)!
+                button.addTarget(self, action: #selector(self.editStickyNote), for: .touchUpInside)
+                if isMemo {
+                    button = menu.addItem(withTitle: "Delete")
+                    button.tag = (sender.view?.tag)!
+                    button.addTarget(self, action: #selector(self.deleteStickyNote), for: .touchUpInside)
+                }
+            })
+        }
+    }
+
     @objc func changeDirection(notification: NSNotification){
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
@@ -149,12 +178,61 @@ class StickyBoardViewController: UIViewController {
         }
     }
 
+    @objc func copyStickyNote(_ sender: UIButton) {
+        UIPasteboard.general.string = self.tempIdea[sender.tag].name
+    }
+
+    @objc func editStickyNote(_ sender: UIButton) {
+        let idea = self.tempIdea[sender.tag]
+
+        let alertController = UIAlertController(title: "Edit", message: "", preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
+            textField.text = idea.name
+        })
+
+        // Editボタンを追加
+        let addAction = UIAlertAction(title: "Edit", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
+            if let textField = alertController.textFields?.first {
+                idea.name = textField.text!
+                self.ideaManager.editIdea(idea.name!, idea.id!)
+                self.view.find(sender.tag).removeFromSuperview()
+                self.addStickyNoteToView(idea)
+            }
+        }
+        alertController.addAction(addAction)
+
+        // Cancelボタンを追加
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+        alertController.addAction(cancelAction)
+
+        present(alertController, animated: true, completion: nil)
+    }
+
+    @objc func deleteStickyNote(_ sender: UIButton) {
+        self.tempIdea.remove(at: sender.tag)
+        self.view.find(sender.tag).removeFromSuperview()
+    }
+
     func calculateCoordinate(_ screenLength: Float, _ ratio: Float, _ stickyLength: Float) -> CGFloat {
         return CGFloat((screenLength - stickyLength)/2*ratio + screenLength/2)
     }
 
     func calculateRatio(_ screenLength: Float, _ travelLength: Float, _ stickyLength: Float) -> Float {
         return 2*(travelLength - screenLength/2)/(screenLength - stickyLength)
+    }
+
+    func addStickyNoteToView(_ idea: Idea) {
+        let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*self.sizeRatio)
+        let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*self.sizeRatio)
+        let stickyView = DrawSticky(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), idea: idea)
+        stickyView.tag = self.tempIdea.index(of: idea)!
+
+        let stickyX: CGFloat = self.calculateCoordinate(Float(self.screenWidth), idea.xRatio, Float(stickyWidth))
+        let stickyY: CGFloat = self.calculateCoordinate(Float(self.screenHeight), idea.yRatio, Float(stickyHeight))
+        stickyView.center = CGPoint(x: stickyX, y: stickyY)
+        stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(self.handlePanGesture)))
+        stickyView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture)))
+        self.view.addSubview(stickyView)
     }
 
     @IBAction func saveButton(_ sender: UIBarButtonItem) {
@@ -194,17 +272,7 @@ class StickyBoardViewController: UIViewController {
             if let textField = alertController.textFields?.first {
                 let idea = self.ideaManager.addNewMemo(textField.text!, self.groupID)
                 self.tempIdea.append(idea)
-
-                let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*self.sizeRatio)
-                let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*self.sizeRatio)
-                let stickyView = DrawSticky(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), idea: idea)
-                stickyView.tag = self.tempIdea.index(of: idea)!
-
-                let stickyX: CGFloat = self.calculateCoordinate(Float(self.screenWidth), idea.xRatio, Float(stickyWidth))
-                let stickyY: CGFloat = self.calculateCoordinate(Float(self.screenHeight), idea.yRatio, Float(stickyHeight))
-                stickyView.center = CGPoint(x: stickyX, y: stickyY)
-                stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(self.handlePanGesture)))
-                self.view.addSubview(stickyView)
+                self.addStickyNoteToView(idea)
             }
         }
         alertController.addAction(addAction)

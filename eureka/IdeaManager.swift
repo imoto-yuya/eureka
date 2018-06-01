@@ -119,6 +119,22 @@ class IdeaManager {
         (UIApplication.shared.delegate as! AppDelegate).saveContext()
     }
 
+    func editIdea(_ name: String, _ uuid: UUID) {
+        let match = self.allIdeaList.filter({$0.id == uuid})
+        for idea in match {
+            idea.name = name
+        }
+        (UIApplication.shared.delegate as! AppDelegate).saveContext()
+    }
+
+    func deleteIdea(_ uuid: UUID) {
+        for idea in self.allIdeaList.filter({$0.id == uuid}) {
+            self.allIdeaList.remove(at: self.allIdeaList.index(of: idea)!)
+            context.delete(idea)
+        }
+        (UIApplication.shared.delegate as! AppDelegate).saveContext()
+    }
+
     func sortIdea(_ sourceIndexPath: Int, _ destinationIndexPath: Int) {
         let idea = copyIdea(sourceIndexPath)
         deleteIdea(sourceIndexPath)
