@@ -121,6 +121,7 @@ class StickyBoardViewController: UIViewController {
 
     // Viewのパンジェスチャーに反応し、処理するためのメソッド
     @objc func handlePanGesture(sender: UIPanGestureRecognizer){
+        self.view.bringSubview(toFront: sender.view!)
         switch sender.state {
         case UIGestureRecognizerState.began:
             // タッチ開始:タッチされたビューのoriginと親ビュー上のタッチ位置を記録しておく
@@ -142,7 +143,8 @@ class StickyBoardViewController: UIViewController {
         }
     }
 
-    @objc func handleLongPressGesture(sender: UITapGestureRecognizer) {
+    @objc func handleLongPressGesture(sender: UILongPressGestureRecognizer) {
+        self.view.bringSubview(toFront: sender.view!)
         if sender.state == UIGestureRecognizerState.began {
             let idea = self.tempIdea[(sender.view?.tag)!]
             let isMemo = idea.isMemo
@@ -165,6 +167,10 @@ class StickyBoardViewController: UIViewController {
                 }
             })
         }
+    }
+
+    @objc func handleTapGesture(sender: UITapGestureRecognizer) {
+        self.view.bringSubview(toFront: sender.view!)
     }
 
     @objc func changeDirection(notification: NSNotification){
@@ -232,6 +238,7 @@ class StickyBoardViewController: UIViewController {
         stickyView.center = CGPoint(x: stickyX, y: stickyY)
         stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(self.handlePanGesture)))
         stickyView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture)))
+        stickyView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.handleTapGesture)))
         self.view.addSubview(stickyView)
     }
 
