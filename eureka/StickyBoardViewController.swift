@@ -85,8 +85,11 @@ class StickyBoardViewController: UIViewController {
             tempIdea = ideaManager.getGroup(self.groupID)
         }
 
+        var counter: Int16 = 0
         for idea in tempIdea {
+            idea.order = counter
             self.addStickyNoteToView(idea)
+            counter += 1
         }
     }
 
@@ -133,7 +136,7 @@ class StickyBoardViewController: UIViewController {
             let newParentPoint = sender.translation(in: self.view)
             // パンジャスチャの継続:タッチ開始時のビューのoriginにタッチ開始からの移動量を加算する
             let travelPoint = orgOrigin + newParentPoint - orgParentPoint
-            let idea = tempIdea[(sender.view?.tag)!]
+            let idea = self.tempIdea[tempIdea.index(where: {$0.order == (sender.view?.tag)!})!]
             idea.xRatio = calculateRatio(Float(screenWidth), Float(travelPoint.x), idea.stickyWidth*sizeRatio)
             idea.yRatio = calculateRatio(Float(screenHeight), Float(travelPoint.y), idea.stickyHeight*sizeRatio)
             sender.view?.center = travelPoint
@@ -146,7 +149,7 @@ class StickyBoardViewController: UIViewController {
     @objc func handleLongPressGesture(sender: UILongPressGestureRecognizer) {
         self.view.bringSubview(toFront: sender.view!)
         if sender.state == UIGestureRecognizerState.began {
-            let idea = self.tempIdea[(sender.view?.tag)!]
+            let idea = self.tempIdea[tempIdea.index(where: {$0.order == (sender.view?.tag)!})!]
             let isMemo = idea.isMemo
             let width = isMemo ? 240 : 160
             let menu = PopoverMenuController()
@@ -177,7 +180,7 @@ class StickyBoardViewController: UIViewController {
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
         for subview in self.view.subviews {
-            let idea = tempIdea[subview.tag]
+            let idea = tempIdea[tempIdea.index(where: {$0.order == subview.tag})!]
             let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, idea.stickyWidth*sizeRatio)
             let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, idea.stickyHeight*sizeRatio)
             subview.center = CGPoint(x:stickyX, y:stickyY)
@@ -185,11 +188,11 @@ class StickyBoardViewController: UIViewController {
     }
 
     @objc func copyStickyNote(_ sender: UIButton) {
-        UIPasteboard.general.string = self.tempIdea[sender.tag].name
+        UIPasteboard.general.string = self.tempIdea[tempIdea.index(where: {$0.order == sender.tag})!].name
     }
 
     @objc func editStickyNote(_ sender: UIButton) {
-        let idea = self.tempIdea[sender.tag]
+        let idea = self.tempIdea[tempIdea.index(where: {$0.order == sender.tag})!]
 
         let alertController = UIAlertController(title: "Edit", message: "", preferredStyle: UIAlertControllerStyle.alert)
         alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
@@ -216,8 +219,9 @@ class StickyBoardViewController: UIViewController {
 
     @objc func deleteStickyNote(_ sender: UIButton) {
         self.view.find(sender.tag).removeFromSuperview()
-        self.ideaManager.deleteIdea(self.tempIdea[sender.tag].id!)
-        self.tempIdea.remove(at: sender.tag)
+        let index = tempIdea.index(where: {$0.order == sender.tag})!
+        self.ideaManager.deleteIdea(self.tempIdea[index].id!)
+        self.tempIdea.remove(at: index)
     }
 
     func calculateCoordinate(_ screenLength: Float, _ ratio: Float, _ stickyLength: Float) -> CGFloat {
@@ -232,7 +236,7 @@ class StickyBoardViewController: UIViewController {
         let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*self.sizeRatio)
         let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*self.sizeRatio)
         let stickyView = DrawSticky(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), idea: idea)
-        stickyView.tag = self.tempIdea.index(of: idea)!
+        stickyView.tag = Int(idea.order)
 
         let stickyX: CGFloat = self.calculateCoordinate(Float(self.screenWidth), idea.xRatio, Float(stickyWidth))
         let stickyY: CGFloat = self.calculateCoordinate(Float(self.screenHeight), idea.yRatio, Float(stickyHeight))
@@ -279,6 +283,7 @@ class StickyBoardViewController: UIViewController {
         let addAction = UIAlertAction(title: "Add", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
             if let textField = alertController.textFields?.first {
                 let idea = self.ideaManager.addNewMemo(textField.text!, self.groupID)
+                idea.order = (self.tempIdea.last?.order)! + 1
                 self.tempIdea.append(idea)
                 self.addStickyNoteToView(idea)
             }
