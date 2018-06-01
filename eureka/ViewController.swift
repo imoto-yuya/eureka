@@ -18,14 +18,12 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "Materials"
-        //navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
 
         let radius: CGFloat = 80
         self.eurekaButton = UIButton(frame: CGRect(x: 0, y: 0, width: radius, height: radius))
         self.eurekaButton.setImage(UIImage(named: "EurekaIcon"), for: UIControlState())
         self.eurekaButton.addTarget(self, action: #selector(transitStickyBoard), for: .touchUpInside)
 
-        // Do any additional setup after loading the view, typically from a nib.
         self.ideaTableView.dataSource = self
         self.ideaTableView.delegate = self
         // ナビゲーションバーに編集ボタンを追加

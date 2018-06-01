@@ -38,11 +38,8 @@ class StickyBoardViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        //let rootViewController = self.navigationController?.viewControllers.first
-        //self.navigationController?.setViewControllers([rootViewController!, self], animated:true)
         self.navigationItem.title = self.groupName
 
-        // Do any additional setup after loading the view.
         ideaManager.fetchIdea()
         // Screen Size の取得
         screenWidth = self.view.bounds.width
@@ -98,16 +95,6 @@ class StickyBoardViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
     // Viewのパンジェスチャーに反応し、処理するためのメソッド
     @objc func handlePanGesture(sender: UIPanGestureRecognizer){
