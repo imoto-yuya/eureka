@@ -165,6 +165,13 @@ class StickyBoardViewController: UIViewController {
 
     @objc func copyStickyNote(_ sender: UIButton) {
         UIPasteboard.general.string = self.materialList[materialList.index(where: {$0.order == sender.tag})!].name
+        let alertController = UIAlertController(title: "Copy text", message: "", preferredStyle: UIAlertControllerStyle.alert)
+        present(alertController, animated: true, completion: {
+            // アラートを閉じる
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.001, execute: {
+                alertController.dismiss(animated: true, completion: nil)
+            })
+        })
     }
 
     @objc func editStickyNote(_ sender: UIButton) {
@@ -195,10 +202,22 @@ class StickyBoardViewController: UIViewController {
     }
 
     @objc func deleteStickyNote(_ sender: UIButton) {
-        self.view.subviews[self.view.subviews.index(where: {$0.tag == sender.tag})!].removeFromSuperview()
-        let index = materialList.index(where: {$0.order == sender.tag})!
-        self.materialManager.delete(self.materialList[index].id!)
-        self.materialList.remove(at: index)
+        let alertController = UIAlertController(title: "Delete memo", message: "", preferredStyle: UIAlertControllerStyle.alert)
+
+        // Deleteボタンを追加
+        let addAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
+            self.view.subviews[self.view.subviews.index(where: {$0.tag == sender.tag})!].removeFromSuperview()
+            let index = self.materialList.index(where: {$0.order == sender.tag})!
+            self.materialManager.delete(self.materialList[index].id!)
+            self.materialList.remove(at: index)
+        }
+        alertController.addAction(addAction)
+
+        // Cancelボタンを追加
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+        alertController.addAction(cancelAction)
+
+        present(alertController, animated: true, completion: nil)
     }
 
     func calculateCoordinate(_ screenLength: Float, _ ratio: Float, _ stickyLength: Float) -> CGFloat {

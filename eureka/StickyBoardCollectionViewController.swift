@@ -101,9 +101,21 @@ class StickyBoardCollectionViewController: UICollectionViewController {
     }
 
     @objc func deleteGroup(_ sender: UIButton) {
-        self.selectedGroupID = Int16(sender.tag)
-        materialManager.deleteGroup(self.selectedGroupID, force: true)
-        self.stickyBoardCollectionView.reloadData()
+        let alertController = UIAlertController(title: "Delete group", message: "", preferredStyle: UIAlertControllerStyle.alert)
+
+        // Deleteボタンを追加
+        let addAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
+            self.selectedGroupID = Int16(sender.tag)
+            self.materialManager.deleteGroup(self.selectedGroupID, force: true)
+            self.stickyBoardCollectionView.reloadData()
+        }
+        alertController.addAction(addAction)
+
+        // Cancelボタンを追加
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+        alertController.addAction(cancelAction)
+
+        present(alertController, animated: true, completion: nil)
     }
 
     @objc func renameGroup(_ sender: UIButton) {
