@@ -11,11 +11,19 @@ import UIKit
 class ViewController: UIViewController {
 
     @IBOutlet weak var ideaTableView: UITableView!
+
+    var eurekaButton: UIButton!
     var ideaManager = IdeaManager.ideaManager
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        self.navigationItem.title = "Materials"
+
+        let radius: CGFloat = 80
+        self.eurekaButton = UIButton(frame: CGRect(x: 0, y: 0, width: radius, height: radius))
+        self.eurekaButton.setImage(UIImage(named: "EurekaIcon"), for: UIControlState())
+        self.eurekaButton.addTarget(self, action: #selector(transitStickyBoard), for: .touchUpInside)
+
         self.ideaTableView.dataSource = self
         self.ideaTableView.delegate = self
         // ナビゲーションバーに編集ボタンを追加
@@ -23,10 +31,20 @@ class ViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.setNavigationBarHidden(false, animated: false)
+        self.navigationController?.hidesBarsOnSwipe = false
+        self.navigationController?.hidesBarsOnTap = false
+        // #selectorで通知後に動く関数を指定。name:は型推論可(".UIDeviceOrientationDidChange")
+        NotificationCenter.default.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
         // CoreDataからデータをfetchしてくる
         ideaManager.fetchIdea()
         // taskTableViewを再読み込みする
         ideaTableView.reloadData()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        updateEurekaButtonPosition()
+        self.navigationController?.view.addSubview(self.eurekaButton)
     }
 
     override func didReceiveMemoryWarning() {
@@ -37,6 +55,21 @@ class ViewController: UIViewController {
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: true)
         self.ideaTableView.setEditing(editing, animated: animated)
+    }
+
+    // 画面遷移先のViewControllerを取得し、データを渡す
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "list2StickyBoard" {
+            let vc = segue.destination as! StickyBoardViewController
+            var selectedGroupID: Int16 = 1
+            if ideaManager.groupList.count > 0 {
+                selectedGroupID = (ideaManager.groupList.last?.0.advanced(by: 1))!
+            }
+            vc.groupID = selectedGroupID
+            vc.groupName = "New"
+            vc.isNew = true
+        }
+        self.navigationController?.view.subviews.last?.removeFromSuperview()
     }
 
     @IBAction func addIdeaButton(_ sender: Any) {
@@ -61,6 +94,19 @@ class ViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
 
+    @objc func changeDirection(notification: NSNotification){
+        updateEurekaButtonPosition()
+    }
+
+    @objc func transitStickyBoard(sender: Any) {
+        performSegue(withIdentifier: "list2StickyBoard", sender: nil)
+    }
+
+    func updateEurekaButtonPosition() {
+        let posX = self.view.bounds.width/2
+        let posY = self.view.bounds.height - self.eurekaButton.frame.height
+        self.eurekaButton.center = CGPoint(x: posX, y: posY)
+    }
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
@@ -83,7 +129,12 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 
     // 編集モードのときのみ削除許可
     func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
-        return tableView.isEditing ? UITableViewCellEditingStyle.delete : UITableViewCellEditingStyle.none
+        //return tableView.isEditing ? UITableViewCellEditingStyle.delete : UITableViewCellEditingStyle.none
+        return UITableViewCellEditingStyle.none
+    }
+
+    func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        return false
     }
 
     // セルの削除処理
