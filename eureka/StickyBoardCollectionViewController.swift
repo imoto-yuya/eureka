@@ -14,19 +14,19 @@ class StickyBoardCollectionViewController: UICollectionViewController {
 
     @IBOutlet weak var stickyBoardCollectionView: UICollectionView!
 
-    var ideaManager = IdeaManager.ideaManager
+    var materialManager = MaterialManager.materialManager
     var selectedGroupID: Int16 = 0
     var selectedGroupName: String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.title = "Ideas"
+        self.navigationItem.title = "Collections"
     }
 
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.hidesBarsOnSwipe = false
         self.navigationController?.hidesBarsOnTap = false
-        ideaManager.fetchIdea()
+        materialManager.fetch()
     }
 
     override func didReceiveMemoryWarning() {
@@ -43,7 +43,7 @@ class StickyBoardCollectionViewController: UICollectionViewController {
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return ideaManager.groupList.count
+        return materialManager.groupList.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -55,8 +55,8 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         let imageView = cell.contentView.viewWithTag(1) as! UIImageView
         let cellImage = UIImage(named: "Image")
         imageView.image = cellImage
-        let groupID = Int(ideaManager.groupList[indexPath.item].0)
-        let groupName = ideaManager.groupList[indexPath.item].1
+        let groupID = Int(materialManager.groupList[indexPath.item].0)
+        let groupName = materialManager.groupList[indexPath.item].1
         cell.nameButton.isEnabled = false
         cell.nameButton.setTitle(groupName, for: UIControlState.normal)
         cell.nameButton.tag = groupID
@@ -68,8 +68,8 @@ class StickyBoardCollectionViewController: UICollectionViewController {
 
     // cell選択時
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.selectedGroupID = ideaManager.groupList[indexPath.item].0
-        self.selectedGroupName = ideaManager.groupList[indexPath.item].1
+        self.selectedGroupID = materialManager.groupList[indexPath.item].0
+        self.selectedGroupName = materialManager.groupList[indexPath.item].1
         performSegue(withIdentifier: "toStickyBoard", sender: nil)
     }
 
@@ -92,23 +92,23 @@ class StickyBoardCollectionViewController: UICollectionViewController {
                 var button = UIButton()
                 button = menu.addItem(withTitle: "Rename")
                 button.tag = (sender.view?.tag)!
-                button.addTarget(self, action: #selector(self.renameIdeaGroup), for: .touchUpInside)
+                button.addTarget(self, action: #selector(self.renameGroup), for: .touchUpInside)
                 button = menu.addItem(withTitle: "Delete")
                 button.tag = (sender.view?.tag)!
-                button.addTarget(self, action: #selector(self.deleteIdeaGroup), for: .touchUpInside)
+                button.addTarget(self, action: #selector(self.deleteGroup), for: .touchUpInside)
             })
         }
     }
 
-    @objc func deleteIdeaGroup(_ sender: UIButton) {
+    @objc func deleteGroup(_ sender: UIButton) {
         self.selectedGroupID = Int16(sender.tag)
-        ideaManager.deleteGroup(self.selectedGroupID, force: true)
+        materialManager.deleteGroup(self.selectedGroupID, force: true)
         self.stickyBoardCollectionView.reloadData()
     }
 
-    @objc func renameIdeaGroup(_ sender: UIButton) {
+    @objc func renameGroup(_ sender: UIButton) {
         let groupID = sender.tag
-        let groupName = ideaManager.groupList[ideaManager.groupList.index(where: {$0.0 == groupID})!].1
+        let groupName = materialManager.groupList[materialManager.groupList.index(where: {$0.0 == groupID})!].1
         let alertController = UIAlertController(title: "Rename", message: "", preferredStyle: UIAlertControllerStyle.alert)
         alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
             textField.text = groupName
@@ -118,7 +118,7 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         let addAction = UIAlertAction(title: "Rename", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
             if let textField = alertController.textFields?.first {
                 let name = textField.text!
-                self.ideaManager.saveIdea(Int16(groupID), name)
+                self.materialManager.save(Int16(groupID), name)
                 let cell = self.collectionView?.visibleCells[(self.collectionView?.visibleCells.index(where: {$0.tag == groupID})!)!]  as! StickyBoardCollectionViewCell
                 cell.nameButton.setTitle(name, for: UIControlState.normal)
             }

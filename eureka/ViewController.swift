@@ -10,10 +10,10 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak var ideaTableView: UITableView!
+    @IBOutlet weak var materialTableView: UITableView!
 
     var eurekaButton: UIButton!
-    var ideaManager = IdeaManager.ideaManager
+    var materialManager = MaterialManager.materialManager
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,8 +24,8 @@ class ViewController: UIViewController {
         self.eurekaButton.setImage(UIImage(named: "EurekaIcon"), for: UIControlState())
         self.eurekaButton.addTarget(self, action: #selector(transitStickyBoard), for: .touchUpInside)
 
-        self.ideaTableView.dataSource = self
-        self.ideaTableView.delegate = self
+        self.materialTableView.dataSource = self
+        self.materialTableView.delegate = self
         // ナビゲーションバーに編集ボタンを追加
         self.navigationItem.setRightBarButton(self.editButtonItem, animated: true)
     }
@@ -37,9 +37,9 @@ class ViewController: UIViewController {
         // #selectorで通知後に動く関数を指定。name:は型推論可(".UIDeviceOrientationDidChange")
         NotificationCenter.default.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
         // CoreDataからデータをfetchしてくる
-        ideaManager.fetchIdea()
+        materialManager.fetch()
         // taskTableViewを再読み込みする
-        ideaTableView.reloadData()
+        materialTableView.reloadData()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -54,7 +54,7 @@ class ViewController: UIViewController {
 
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: true)
-        self.ideaTableView.setEditing(editing, animated: animated)
+        self.materialTableView.setEditing(editing, animated: animated)
     }
 
     // 画面遷移先のViewControllerを取得し、データを渡す
@@ -62,8 +62,8 @@ class ViewController: UIViewController {
         if segue.identifier == "list2StickyBoard" {
             let vc = segue.destination as! StickyBoardViewController
             var selectedGroupID: Int16 = 1
-            if ideaManager.groupList.count > 0 {
-                selectedGroupID = (ideaManager.groupList.last?.0.advanced(by: 1))!
+            if materialManager.groupList.count > 0 {
+                selectedGroupID = (materialManager.groupList.last?.0.advanced(by: 1))!
             }
             vc.groupID = selectedGroupID
             vc.groupName = "New"
@@ -72,23 +72,23 @@ class ViewController: UIViewController {
         self.navigationController?.view.subviews.last?.removeFromSuperview()
     }
 
-    @IBAction func addIdeaButton(_ sender: Any) {
-        let alertController = UIAlertController(title: "Add Idea", message: "", preferredStyle: UIAlertControllerStyle.alert)
+    @IBAction func addMaterialButton(_ sender: Any) {
+        let alertController = UIAlertController(title: "Add material", message: "", preferredStyle: UIAlertControllerStyle.alert)
         alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
-            textField.placeholder = "Input Idea"
+            textField.placeholder = "Input material of idea"
         })
 
         // Addボタンを追加
-        let addAction = UIAlertAction(title: "ADD", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
+        let addAction = UIAlertAction(title: "Add", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
             if let textField = alertController.textFields?.first {
-                self.ideaManager.addNewIdea(textField.text!)
-                self.ideaTableView.insertRows(at: [IndexPath(row: 0, section:0)], with: UITableViewRowAnimation.right)
+                self.materialManager.addNew(textField.text!)
+                self.materialTableView.insertRows(at: [IndexPath(row: 0, section:0)], with: UITableViewRowAnimation.right)
             }
         }
         alertController.addAction(addAction)
 
         // Cancelボタンを追加
-        let cancelAction = UIAlertAction(title: "CANCEL", style: UIAlertActionStyle.cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
         alertController.addAction(cancelAction)
 
         present(alertController, animated: true, completion: nil)
@@ -112,13 +112,13 @@ class ViewController: UIViewController {
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     // セル数を決める
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return ideaManager.ideas.count
+        return materialManager.material0List.count
     }
 
     // セルの内容を決める
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = ideaTableView.dequeueReusableCell(withIdentifier: "ideaCell", for: indexPath)
-        cell.textLabel?.text = ideaManager.ideas[indexPath.row].name
+        let cell = materialTableView.dequeueReusableCell(withIdentifier: "materialCell", for: indexPath)
+        cell.textLabel?.text = materialManager.material0List[indexPath.row].name
         return cell
     }
 
@@ -140,28 +140,28 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     // セルの削除処理
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            ideaManager.deleteIdea(indexPath.row)
+            materialManager.delete(indexPath.row)
         }
         // taskTableViewを再読み込みする
-        ideaTableView.reloadData()
+        materialTableView.reloadData()
     }
 
     // セルをタップしたときの処理
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let alertController = UIAlertController(title: "Edit Idea", message: "", preferredStyle: UIAlertControllerStyle.alert)
+        let alertController = UIAlertController(title: "Edit material", message: "", preferredStyle: UIAlertControllerStyle.alert)
         alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
-            textField.text = self.ideaManager.ideas[indexPath.row].name
+            textField.text = self.materialManager.material0List[indexPath.row].name
         })
 
         // Editボタンを追加
-        let editAction = UIAlertAction(title: "EDIT", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
-            self.ideaManager.editIdea((alertController.textFields?.first?.text)!, indexPath.row)
-            self.ideaTableView.reloadData()
+        let editAction = UIAlertAction(title: "Edit", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
+            self.materialManager.rename((alertController.textFields?.first?.text)!, indexPath.row)
+            self.materialTableView.reloadData()
         }
         alertController.addAction(editAction)
 
         // Cancelボタンを追加
-        let cancelAction = UIAlertAction(title: "CANCEL", style: UIAlertActionStyle.cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
         alertController.addAction(cancelAction)
 
         present(alertController, animated: true, completion: nil)
@@ -174,6 +174,6 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 
     // セルの並び替え
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        ideaManager.sortIdea(sourceIndexPath.row, destinationIndexPath.row)
+        materialManager.sort(sourceIndexPath.row, destinationIndexPath.row)
     }
 }

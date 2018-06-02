@@ -22,7 +22,7 @@
                                 <rect key="frame" x="0.0" y="64" width="375" height="559"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ideaCell" id="GUF-8D-PwK">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="materialCell" id="GUF-8D-PwK">
                                         <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="GUF-8D-PwK" id="cJF-bG-qpR">
@@ -53,13 +53,13 @@
                     <navigationItem key="navigationItem" title="eureka" id="HD0-6d-JZ1">
                         <barButtonItem key="leftBarButtonItem" systemItem="add" id="Wdf-Km-VlX">
                             <connections>
-                                <action selector="addIdeaButton:" destination="BYZ-38-t0r" id="zJf-To-Pkw"/>
+                                <action selector="addMaterialButton:" destination="BYZ-38-t0r" id="zJf-To-Pkw"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="ideaTableView" destination="e2z-iv-Qx6" id="ImC-xz-KIc"/>
+                        <outlet property="materialTableView" destination="e2z-iv-Qx6" id="ImC-xz-KIc"/>
                         <segue destination="Nss-AK-Fql" kind="show" identifier="list2StickyBoard" id="x8P-HV-heu"/>
                     </connections>
                 </viewController>
@@ -182,6 +182,6 @@
         <image name="saveIcon" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="aud-zY-Rgg"/>
+        <segue reference="x8P-HV-heu"/>
     </inferredMetricsTieBreakers>
 </document>

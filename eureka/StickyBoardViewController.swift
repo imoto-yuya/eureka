@@ -21,11 +21,11 @@ class StickyBoardViewController: UIViewController {
 
     @IBOutlet weak var saveButtonItem: UIBarButtonItem!
 
-    var ideaManager = IdeaManager.ideaManager
+    var materialManager = MaterialManager.materialManager
     var screenWidth: CGFloat = 0
     var screenHeight: CGFloat = 0
     var sizeRatio: Float = 1
-    var tempIdea: [Idea] = []
+    var materialList: [Material] = []
     var groupID: Int16 = 0
     var groupName: String = ""
     var isNew: Bool = true
@@ -40,7 +40,7 @@ class StickyBoardViewController: UIViewController {
 
         self.navigationItem.title = self.groupName
 
-        ideaManager.fetchIdea()
+        materialManager.fetch()
         // Screen Size の取得
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
@@ -54,25 +54,25 @@ class StickyBoardViewController: UIViewController {
         if isNew {
             self.saveButtonItem.isEnabled = true
             self.saveButtonItem.tintColor = nil
-            let random = RandomizedExtraction(ideaManager.ideas.count)
+            let random = RandomizedExtraction(materialManager.material0List.count)
             let indexList = random.getIndexList(needNum)
             for index in indexList {
-                let idea = ideaManager.copyIdea(index)
-                idea.groupID = self.groupID
-                idea.xRatio = Float(arc4random_uniform(201))/100 - 1
-                idea.yRatio = Float(arc4random_uniform(201))/100 - 1
-                tempIdea.append(idea)
+                let material = materialManager.copy(index)
+                material.groupID = self.groupID
+                material.xRatio = Float(arc4random_uniform(201))/100 - 1
+                material.yRatio = Float(arc4random_uniform(201))/100 - 1
+                materialList.append(material)
             }
         } else {
             self.saveButtonItem.isEnabled = false
             self.saveButtonItem.tintColor = UIColor(white: 0, alpha: 0)
-            tempIdea = ideaManager.getGroup(self.groupID)
+            materialList = materialManager.getGroup(self.groupID)
         }
 
         var counter: Int16 = 0
-        for idea in tempIdea {
-            idea.order = counter
-            self.addStickyNoteToView(idea)
+        for material in materialList {
+            material.order = counter
+            self.addStickyNoteToView(material)
             counter += 1
         }
     }
@@ -82,12 +82,12 @@ class StickyBoardViewController: UIViewController {
         self.navigationController?.hidesBarsOnTap = true
         // #selectorで通知後に動く関数を指定。name:は型推論可(".UIDeviceOrientationDidChange")
         NotificationCenter.default.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
-        ideaManager.fetchIdea()
+        materialManager.fetch()
     }
 
     override func didMove(toParentViewController parent: UIViewController?) {
         if parent == nil && self.isNew{
-            ideaManager.deleteGroup(self.groupID, force: false)
+            materialManager.deleteGroup(self.groupID, force: false)
         }
     }
 
@@ -110,9 +110,9 @@ class StickyBoardViewController: UIViewController {
             let newParentPoint = sender.translation(in: self.view)
             // パンジャスチャの継続:タッチ開始時のビューのoriginにタッチ開始からの移動量を加算する
             let travelPoint = orgOrigin + newParentPoint - orgParentPoint
-            let idea = self.tempIdea[tempIdea.index(where: {$0.order == (sender.view?.tag)!})!]
-            idea.xRatio = calculateRatio(Float(screenWidth), Float(travelPoint.x), idea.stickyWidth*sizeRatio)
-            idea.yRatio = calculateRatio(Float(screenHeight), Float(travelPoint.y), idea.stickyHeight*sizeRatio)
+            let material = self.materialList[materialList.index(where: {$0.order == (sender.view?.tag)!})!]
+            material.xRatio = calculateRatio(Float(screenWidth), Float(travelPoint.x), material.stickyWidth*sizeRatio)
+            material.yRatio = calculateRatio(Float(screenHeight), Float(travelPoint.y), material.stickyHeight*sizeRatio)
             sender.view?.center = travelPoint
             break
         default:
@@ -123,8 +123,8 @@ class StickyBoardViewController: UIViewController {
     @objc func handleLongPressGesture(sender: UILongPressGestureRecognizer) {
         self.view.bringSubview(toFront: sender.view!)
         if sender.state == UIGestureRecognizerState.began {
-            let idea = self.tempIdea[tempIdea.index(where: {$0.order == (sender.view?.tag)!})!]
-            let isMemo = idea.isMemo
+            let material = self.materialList[materialList.index(where: {$0.order == (sender.view?.tag)!})!]
+            let isMemo = material.isMemo
             let width = isMemo ? 240 : 160
             let menu = PopoverMenuController()
             menu.prepare(at: sender.view!)
@@ -154,35 +154,35 @@ class StickyBoardViewController: UIViewController {
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
         for subview in self.view.subviews {
-            if let index = tempIdea.index(where: {$0.order == subview.tag}) {
-                let idea = tempIdea[index]
-                let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, idea.stickyWidth*sizeRatio)
-                let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, idea.stickyHeight*sizeRatio)
+            if let index = materialList.index(where: {$0.order == subview.tag}) {
+                let material = materialList[index]
+                let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), material.xRatio, material.stickyWidth*sizeRatio)
+                let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), material.yRatio, material.stickyHeight*sizeRatio)
                 subview.center = CGPoint(x:stickyX, y:stickyY)
             }
         }
     }
 
     @objc func copyStickyNote(_ sender: UIButton) {
-        UIPasteboard.general.string = self.tempIdea[tempIdea.index(where: {$0.order == sender.tag})!].name
+        UIPasteboard.general.string = self.materialList[materialList.index(where: {$0.order == sender.tag})!].name
     }
 
     @objc func editStickyNote(_ sender: UIButton) {
-        let idea = self.tempIdea[tempIdea.index(where: {$0.order == sender.tag})!]
+        let material = self.materialList[materialList.index(where: {$0.order == sender.tag})!]
 
         let alertController = UIAlertController(title: "Edit", message: "", preferredStyle: UIAlertControllerStyle.alert)
         alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
-            textField.text = idea.name
+            textField.text = material.name
         })
 
         // Editボタンを追加
         let addAction = UIAlertAction(title: "Edit", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
             if let textField = alertController.textFields?.first {
-                idea.name = textField.text!
-                self.ideaManager.editIdea(idea.name!, idea.id!)
+                material.name = textField.text!
+                self.materialManager.rename(material.name!, material.id!)
                 // tagは重複しないことを想定
                 self.view.subviews[self.view.subviews.index(where: {$0.tag == sender.tag})!].removeFromSuperview()
-                self.addStickyNoteToView(idea)
+                self.addStickyNoteToView(material)
             }
         }
         alertController.addAction(addAction)
@@ -196,9 +196,9 @@ class StickyBoardViewController: UIViewController {
 
     @objc func deleteStickyNote(_ sender: UIButton) {
         self.view.subviews[self.view.subviews.index(where: {$0.tag == sender.tag})!].removeFromSuperview()
-        let index = tempIdea.index(where: {$0.order == sender.tag})!
-        self.ideaManager.deleteIdea(self.tempIdea[index].id!)
-        self.tempIdea.remove(at: index)
+        let index = materialList.index(where: {$0.order == sender.tag})!
+        self.materialManager.delete(self.materialList[index].id!)
+        self.materialList.remove(at: index)
     }
 
     func calculateCoordinate(_ screenLength: Float, _ ratio: Float, _ stickyLength: Float) -> CGFloat {
@@ -209,14 +209,14 @@ class StickyBoardViewController: UIViewController {
         return 2*(travelLength - screenLength/2)/(screenLength - stickyLength)
     }
 
-    func addStickyNoteToView(_ idea: Idea) {
-        let stickyWidth: CGFloat = CGFloat(idea.stickyWidth*self.sizeRatio)
-        let stickyHeight: CGFloat = CGFloat(idea.stickyHeight*self.sizeRatio)
-        let stickyView = DrawSticky(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), idea: idea)
-        stickyView.tag = Int(idea.order)
+    func addStickyNoteToView(_ material: Material) {
+        let stickyWidth: CGFloat = CGFloat(material.stickyWidth*self.sizeRatio)
+        let stickyHeight: CGFloat = CGFloat(material.stickyHeight*self.sizeRatio)
+        let stickyView = DrawSticky(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), material: material)
+        stickyView.tag = Int(material.order)
 
-        let stickyX: CGFloat = self.calculateCoordinate(Float(self.screenWidth), idea.xRatio, Float(stickyWidth))
-        let stickyY: CGFloat = self.calculateCoordinate(Float(self.screenHeight), idea.yRatio, Float(stickyHeight))
+        let stickyX: CGFloat = self.calculateCoordinate(Float(self.screenWidth), material.xRatio, Float(stickyWidth))
+        let stickyY: CGFloat = self.calculateCoordinate(Float(self.screenHeight), material.yRatio, Float(stickyHeight))
         stickyView.center = CGPoint(x: stickyX, y: stickyY)
         stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(self.handlePanGesture)))
         stickyView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture)))
@@ -234,7 +234,7 @@ class StickyBoardViewController: UIViewController {
         let addAction = UIAlertAction(title: "Save", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
             if let textField = alertController.textFields?.first {
                 self.groupName = textField .text!
-                self.ideaManager.saveIdea(self.groupID, self.groupName)
+                self.materialManager.save(self.groupID, self.groupName)
                 self.navigationItem.title = self.groupName
                 self.isNew = false
                 self.saveButtonItem.isEnabled = false
@@ -244,7 +244,7 @@ class StickyBoardViewController: UIViewController {
         alertController.addAction(addAction)
 
         // Cancelボタンを追加
-        let cancelAction = UIAlertAction(title: "CANCEL", style: UIAlertActionStyle.cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
         alertController.addAction(cancelAction)
 
         present(alertController, animated: true, completion: nil)
@@ -259,10 +259,10 @@ class StickyBoardViewController: UIViewController {
         // Addボタンを追加
         let addAction = UIAlertAction(title: "Add", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
             if let textField = alertController.textFields?.first {
-                let idea = self.ideaManager.addNewMemo(textField.text!, self.groupID)
-                idea.order = (self.tempIdea.last?.order)! + 1
-                self.tempIdea.append(idea)
-                self.addStickyNoteToView(idea)
+                let memo = self.materialManager.addNewMemo(textField.text!, self.groupID)
+                memo.order = (self.materialList.last?.order)! + 1
+                self.materialList.append(memo)
+                self.addStickyNoteToView(memo)
             }
         }
         alertController.addAction(addAction)

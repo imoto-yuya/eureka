@@ -16,7 +16,7 @@
 		FA8C4B5520956B5500E7C3E6 /* eurekaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8C4B5420956B5500E7C3E6 /* eurekaTests.swift */; };
 		FA8C4B6020956B5500E7C3E6 /* eurekaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8C4B5F20956B5500E7C3E6 /* eurekaUITests.swift */; };
 		FABA9DE520BEE9670047F4C2 /* PopoverMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABA9DE420BEE9670047F4C2 /* PopoverMenuController.swift */; };
-		FAC5188F2096CC2C00459EBB /* IdeaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC5188E2096CC2C00459EBB /* IdeaManager.swift */; };
+		FAC5188F2096CC2C00459EBB /* MaterialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC5188E2096CC2C00459EBB /* MaterialManager.swift */; };
 		FAC518912097431E00459EBB /* StickyBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC518902097431E00459EBB /* StickyBoardViewController.swift */; };
 		FAC518932097454F00459EBB /* DrawSticky.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC518922097454F00459EBB /* DrawSticky.swift */; };
 		FAF3998F20A88BA4009108A6 /* RandomizedExtraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF3998E20A88BA4009108A6 /* RandomizedExtraction.swift */; };
@@ -57,7 +57,7 @@
 		FA8C4B5F20956B5500E7C3E6 /* eurekaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = eurekaUITests.swift; sourceTree = "<group>"; };
 		FA8C4B6120956B5500E7C3E6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FABA9DE420BEE9670047F4C2 /* PopoverMenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuController.swift; sourceTree = "<group>"; };
-		FAC5188E2096CC2C00459EBB /* IdeaManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdeaManager.swift; sourceTree = "<group>"; };
+		FAC5188E2096CC2C00459EBB /* MaterialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterialManager.swift; sourceTree = "<group>"; };
 		FAC518902097431E00459EBB /* StickyBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyBoardViewController.swift; sourceTree = "<group>"; };
 		FAC518922097454F00459EBB /* DrawSticky.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawSticky.swift; sourceTree = "<group>"; };
 		FAF3998E20A88BA4009108A6 /* RandomizedExtraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomizedExtraction.swift; sourceTree = "<group>"; };
@@ -115,7 +115,7 @@
 			children = (
 				FA8C4B3C20956B5300E7C3E6 /* AppDelegate.swift */,
 				FA8C4B3E20956B5300E7C3E6 /* ViewController.swift */,
-				FAC5188E2096CC2C00459EBB /* IdeaManager.swift */,
+				FAC5188E2096CC2C00459EBB /* MaterialManager.swift */,
 				FAF3998E20A88BA4009108A6 /* RandomizedExtraction.swift */,
 				FA8C4B4020956B5300E7C3E6 /* Main.storyboard */,
 				FAF3999220B31B18009108A6 /* StickyBoardCollectionViewCell.swift */,
@@ -284,7 +284,7 @@
 				FA8C4B3F20956B5300E7C3E6 /* ViewController.swift in Sources */,
 				FA8C4B4520956B5300E7C3E6 /* eureka.xcdatamodeld in Sources */,
 				FAC518912097431E00459EBB /* StickyBoardViewController.swift in Sources */,
-				FAC5188F2096CC2C00459EBB /* IdeaManager.swift in Sources */,
+				FAC5188F2096CC2C00459EBB /* MaterialManager.swift in Sources */,
 				FAF3999120AF392E009108A6 /* StickyBoardCollectionViewController.swift in Sources */,
 				FAF3999320B31B18009108A6 /* StickyBoardCollectionViewCell.swift in Sources */,
 				FAC518932097454F00459EBB /* DrawSticky.swift in Sources */,

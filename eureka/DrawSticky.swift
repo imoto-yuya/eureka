@@ -9,7 +9,7 @@
 import UIKit
 
 class DrawSticky: UITextView {
-    var idea: Idea!
+    var material: Material!
 
     // 入力カーソル非表示
     override func caretRect(for position: UITextPosition) -> CGRect {
@@ -30,17 +30,17 @@ class DrawSticky: UITextView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    init(frame: CGRect, idea: Idea) {
+    init(frame: CGRect, material: Material) {
         super.init(frame: frame, textContainer: nil)
-        self.idea = idea
+        self.material = material
         initialize()
     }
 
     func initialize() {
         let sizeRatio: Float = UIDevice.current.userInterfaceIdiom == .phone ? 1 : 1.5
-        self.text = idea.name
-        self.font = UIFont.systemFont(ofSize: CGFloat(idea.stickyFontSize*sizeRatio))
-        self.backgroundColor = UIColor(red: CGFloat(idea.stickyRGBRed), green: CGFloat(idea.stickyRGBGreen), blue: CGFloat(idea.stickyRGBBlue), alpha: 1.0)
+        self.text = material.name
+        self.font = UIFont.systemFont(ofSize: CGFloat(material.stickyFontSize*sizeRatio))
+        self.backgroundColor = UIColor(red: CGFloat(material.stickyRGBRed), green: CGFloat(material.stickyRGBGreen), blue: CGFloat(material.stickyRGBBlue), alpha: 1.0)
         self.layer.borderWidth = 2.0
         self.layer.borderColor = UIColor.white.cgColor
         self.isEditable = false
