@@ -154,10 +154,12 @@ class StickyBoardViewController: UIViewController {
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
         for subview in self.view.subviews {
-            let idea = tempIdea[tempIdea.index(where: {$0.order == subview.tag})!]
-            let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, idea.stickyWidth*sizeRatio)
-            let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, idea.stickyHeight*sizeRatio)
-            subview.center = CGPoint(x:stickyX, y:stickyY)
+            if let index = tempIdea.index(where: {$0.order == subview.tag}) {
+                let idea = tempIdea[index]
+                let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), idea.xRatio, idea.stickyWidth*sizeRatio)
+                let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), idea.yRatio, idea.stickyHeight*sizeRatio)
+                subview.center = CGPoint(x:stickyX, y:stickyY)
+            }
         }
     }
 
