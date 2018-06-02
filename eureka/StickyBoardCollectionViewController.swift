@@ -17,11 +17,9 @@ class StickyBoardCollectionViewController: UICollectionViewController {
     var ideaManager = IdeaManager.ideaManager
     var selectedGroupID: Int16 = 0
     var selectedGroupName: String = ""
-    var idEditing = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.setRightBarButton(self.editButtonItem, animated: true)
         self.navigationItem.title = "Ideas"
     }
 
@@ -34,13 +32,6 @@ class StickyBoardCollectionViewController: UICollectionViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-
-    override func setEditing(_ editing: Bool, animated: Bool) {
-        super.setEditing(editing, animated: true)
-        // 通常・編集モードの切り替え
-        self.idEditing = editing
-        self.stickyBoardCollectionView.reloadData()
     }
 
     // MARK: UICollectionViewDataSource
@@ -56,7 +47,7 @@ class StickyBoardCollectionViewController: UICollectionViewController {
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        self.stickyBoardCollectionView.backgroundColor = self.isEditing ? UIColor(red: 0.886, green: 0.624, blue: 0.655, alpha: 1.0) : UIColor(red: 0.906, green: 0.906, blue: 0.886, alpha: 1.0)
+        self.stickyBoardCollectionView.backgroundColor = UIColor(red: 0.906, green: 0.906, blue: 0.886, alpha: 1.0)
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! StickyBoardCollectionViewCell
 
@@ -66,23 +57,20 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         imageView.image = cellImage
         let groupID = Int(ideaManager.groupList[indexPath.item].0)
         let groupName = ideaManager.groupList[indexPath.item].1
-        cell.deleteButton.isHidden = self.isEditing ? false : true
-        cell.deleteButton.tag = groupID
-        cell.nameButton.isEnabled = self.isEditing ? true : false
+        cell.nameButton.isEnabled = false
         cell.nameButton.setTitle(groupName, for: UIControlState.normal)
         cell.nameButton.tag = groupID
+        cell.tag = groupID
+        cell.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture)))
 
         return cell
     }
 
     // cell選択時
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if !self.isEditing {
-            self.selectedGroupID = ideaManager.groupList[indexPath.item].0
-            self.selectedGroupName = ideaManager.groupList[indexPath.item].1
-            //navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
-            performSegue(withIdentifier: "toStickyBoard", sender: nil)
-        }
+        self.selectedGroupID = ideaManager.groupList[indexPath.item].0
+        self.selectedGroupName = ideaManager.groupList[indexPath.item].1
+        performSegue(withIdentifier: "toStickyBoard", sender: nil)
     }
 
     // 画面遷移先のViewControllerを取得し、データを渡す
@@ -95,36 +83,52 @@ class StickyBoardCollectionViewController: UICollectionViewController {
         }
     }
 
-    @IBAction func tapDeleteButton(_ sender: UIButton) {
+    @objc func handleLongPressGesture(sender: UILongPressGestureRecognizer) {
+        if sender.state == UIGestureRecognizerState.began {
+            let menu = PopoverMenuController()
+            menu.prepare(at: sender.view!)
+            menu.viewSize = CGSize(width: 160, height: 40)
+            self.present(menu, animated: true, completion: {
+                var button = UIButton()
+                button = menu.addItem(withTitle: "Rename")
+                button.tag = (sender.view?.tag)!
+                button.addTarget(self, action: #selector(self.renameIdeaGroup), for: .touchUpInside)
+                button = menu.addItem(withTitle: "Delete")
+                button.tag = (sender.view?.tag)!
+                button.addTarget(self, action: #selector(self.deleteIdeaGroup), for: .touchUpInside)
+            })
+        }
+    }
+
+    @objc func deleteIdeaGroup(_ sender: UIButton) {
         self.selectedGroupID = Int16(sender.tag)
         ideaManager.deleteGroup(self.selectedGroupID, force: true)
         self.stickyBoardCollectionView.reloadData()
     }
 
-    @IBAction func tapEditNameButton(_ sender: UIButton) {
-        if self.isEditing {
-            let groupID = sender.tag
-            let groupName = sender.titleLabel?.text
-            let alertController = UIAlertController(title: "Rename", message: "", preferredStyle: UIAlertControllerStyle.alert)
-            alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
-                textField.text = groupName
-            })
+    @objc func renameIdeaGroup(_ sender: UIButton) {
+        let groupID = sender.tag
+        let groupName = ideaManager.groupList[ideaManager.groupList.index(where: {$0.0 == groupID})!].1
+        let alertController = UIAlertController(title: "Rename", message: "", preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
+            textField.text = groupName
+        })
 
-            // Renameボタンを追加
-            let addAction = UIAlertAction(title: "Rename", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
-                if let textField = alertController.textFields?.first {
-                    let name = textField.text!
-                    self.ideaManager.saveIdea(Int16(groupID), name)
-                    sender.setTitle(name, for: UIControlState.normal)
-                }
+        // Renameボタンを追加
+        let addAction = UIAlertAction(title: "Rename", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
+            if let textField = alertController.textFields?.first {
+                let name = textField.text!
+                self.ideaManager.saveIdea(Int16(groupID), name)
+                let cell = self.collectionView?.visibleCells[(self.collectionView?.visibleCells.index(where: {$0.tag == groupID})!)!]  as! StickyBoardCollectionViewCell
+                cell.nameButton.setTitle(name, for: UIControlState.normal)
             }
-            alertController.addAction(addAction)
-
-            // Cancelボタンを追加
-            let cancelAction = UIAlertAction(title: "CANCEL", style: UIAlertActionStyle.cancel, handler: nil)
-            alertController.addAction(cancelAction)
-
-            present(alertController, animated: true, completion: nil)
         }
+        alertController.addAction(addAction)
+
+        // Cancelボタンを追加
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
+        alertController.addAction(cancelAction)
+
+        present(alertController, animated: true, completion: nil)
     }
 }

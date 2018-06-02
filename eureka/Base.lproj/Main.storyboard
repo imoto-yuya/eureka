@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="8uR-fE-m5V">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="8uR-fE-m5V">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -126,28 +126,16 @@
                                             <rect key="frame" x="13" y="18" width="156" height="156"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         </imageView>
-                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LUS-gO-vho">
-                                            <rect key="frame" x="19" y="25" width="24" height="24"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <state key="normal" image="DeleteIcon"/>
-                                            <connections>
-                                                <action selector="tapDeleteButton:" destination="nld-OB-m3N" eventType="touchUpInside" id="uiw-jQ-b3o"/>
-                                            </connections>
-                                        </button>
                                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jeu-cc-doC">
                                             <rect key="frame" x="13" y="176" width="156" height="30"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <state key="normal" title="Name">
                                                 <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </state>
-                                            <connections>
-                                                <action selector="tapEditNameButton:" destination="nld-OB-m3N" eventType="touchUpInside" id="YhU-Ao-Yvg"/>
-                                            </connections>
                                         </button>
                                     </subviews>
                                 </view>
                                 <connections>
-                                    <outlet property="deleteButton" destination="LUS-gO-vho" id="AOc-Qe-ief"/>
                                     <outlet property="nameButton" destination="Jeu-cc-doC" id="7x3-az-ZuN"/>
                                 </connections>
                             </collectionViewCell>
@@ -190,11 +178,10 @@
         </scene>
     </scenes>
     <resources>
-        <image name="DeleteIcon" width="24" height="24"/>
         <image name="ListIcon" width="24" height="24"/>
         <image name="saveIcon" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="x8P-HV-heu"/>
+        <segue reference="aud-zY-Rgg"/>
     </inferredMetricsTieBreakers>
 </document>
