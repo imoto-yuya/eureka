@@ -80,6 +80,7 @@ class MaterialManager {
         material.stickyRGBRed = material0List[index].stickyRGBRed
         material.stickyRGBGreen = material0List[index].stickyRGBGreen
         material.stickyRGBBlue = material0List[index].stickyRGBBlue
+        material.stickyRGBAlpha = material0List[index].stickyRGBAlpha
         return material
     }
 
@@ -111,6 +112,7 @@ class MaterialManager {
         material.stickyRGBRed = 1.0
         material.stickyRGBGreen = 0.937
         material.stickyRGBBlue = 0.522
+        material.stickyRGBAlpha = 1.0
         insert(material, 0)
     }
 
@@ -150,11 +152,12 @@ class MaterialManager {
         material.xRatio = 0
         material.yRatio = 0
         material.stickyFontSize = 16
-        material.stickyWidth = 200
-        material.stickyHeight = 30
-        material.stickyRGBRed = 1
-        material.stickyRGBGreen = 1
-        material.stickyRGBBlue = 1
+        material.stickyWidth = contents.count <= 12 ? Float(contents.count)*17 : 210
+        material.stickyHeight = Float(35 + (contents.count / 14) * 20)
+        material.stickyRGBRed = 0.982
+        material.stickyRGBGreen = 0.587
+        material.stickyRGBBlue = 0.098
+        material.stickyRGBAlpha = 0.2
         self.materialList.append(material)
         (UIApplication.shared.delegate as! AppDelegate).saveContext()
         return material

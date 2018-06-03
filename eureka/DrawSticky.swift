@@ -40,7 +40,7 @@ class DrawSticky: UITextView {
         let sizeRatio: Float = UIDevice.current.userInterfaceIdiom == .phone ? 1 : 1.5
         self.text = material.name
         self.font = UIFont.systemFont(ofSize: CGFloat(material.stickyFontSize*sizeRatio))
-        self.backgroundColor = UIColor(red: CGFloat(material.stickyRGBRed), green: CGFloat(material.stickyRGBGreen), blue: CGFloat(material.stickyRGBBlue), alpha: 1.0)
+        self.backgroundColor = UIColor(red: CGFloat(material.stickyRGBRed), green: CGFloat(material.stickyRGBGreen), blue: CGFloat(material.stickyRGBBlue), alpha: CGFloat(material.stickyRGBAlpha))
         self.layer.borderWidth = 2.0
         self.layer.borderColor = UIColor.white.cgColor
         self.isEditable = false
