@@ -41,9 +41,15 @@ class DrawSticky: UITextView {
         self.text = material.name
         self.font = UIFont.systemFont(ofSize: CGFloat(material.stickyFontSize*sizeRatio))
         self.backgroundColor = UIColor(red: CGFloat(material.stickyRGBRed), green: CGFloat(material.stickyRGBGreen), blue: CGFloat(material.stickyRGBBlue), alpha: CGFloat(material.stickyRGBAlpha))
-        self.layer.borderWidth = 2.0
-        self.layer.borderColor = UIColor.white.cgColor
         self.isEditable = false
+        if material.isMemo {
+            let size: CGSize = self.sizeThatFits(self.frame.size)
+            self.frame.size.width = size.width
+            self.frame.size.height = size.height
+        } else {
+            self.layer.borderWidth = 2.0
+            self.layer.borderColor = UIColor.white.cgColor
+        }
     }
 
 }

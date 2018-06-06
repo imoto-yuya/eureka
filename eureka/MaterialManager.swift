@@ -152,12 +152,12 @@ class MaterialManager {
         material.xRatio = 0
         material.yRatio = 0
         material.stickyFontSize = 16
-        material.stickyWidth = contents.count <= 12 ? Float(contents.count)*17 : 210
-        material.stickyHeight = Float(35 + (contents.count / 14) * 20)
-        material.stickyRGBRed = 0.982
-        material.stickyRGBGreen = 0.587
-        material.stickyRGBBlue = 0.098
-        material.stickyRGBAlpha = 0.2
+        material.stickyWidth = 200
+        material.stickyHeight = 100
+        material.stickyRGBRed = 0
+        material.stickyRGBGreen = 0
+        material.stickyRGBBlue = 0
+        material.stickyRGBAlpha = 0
         self.materialList.append(material)
         (UIApplication.shared.delegate as! AppDelegate).saveContext()
         return material
