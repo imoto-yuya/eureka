@@ -108,9 +108,9 @@ class MaterialManager {
         material.name = name
         material.xRatio = 0
         material.yRatio = 0
-        material.stickyFontSize = 12
-        material.stickyWidth = 100
-        material.stickyHeight = 80
+        material.stickyFontSize = 16
+        material.stickyWidth = 120
+        material.stickyHeight = 90
         material.stickyRGBRed = 1.0
         material.stickyRGBGreen = 0.937
         material.stickyRGBBlue = 0.522

@@ -32,6 +32,7 @@ class StickyBoardViewController: UIViewController {
     var backScreen: UIView!
 
     var selectedStickyNoteID = 0
+    var isStickyNoteEdit = false
 
     // タッチ開始時のUIViewのorigin
     var orgOrigin: CGPoint!
@@ -125,7 +126,8 @@ class StickyBoardViewController: UIViewController {
     }
 
     @objc func addNewMemo(sender: UILongPressGestureRecognizer) {
-        if sender.state == UIGestureRecognizerState.began {
+        if sender.state == UIGestureRecognizerState.began && !self.isStickyNoteEdit{
+            self.isStickyNoteEdit = true
             backScreen = UIView(frame: CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight))
             backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
             self.view.addSubview(backScreen)
@@ -150,7 +152,7 @@ class StickyBoardViewController: UIViewController {
         self.view.bringSubview(toFront: stickyView)
         self.selectedStickyNoteID = stickyView.tag
         let material = self.materialList[materialList.index(where: {$0.order == self.selectedStickyNoteID})!]
-        if sender.state == UIGestureRecognizerState.began {
+        if sender.state == UIGestureRecognizerState.began && !self.isStickyNoteEdit{
             let width = material.isMemo ? 240 : 160
             let menu = PopoverMenuController()
             menu.prepare(at: stickyView)
@@ -192,16 +194,10 @@ class StickyBoardViewController: UIViewController {
 
     @objc func copyStickyNote(_ sender: UIButton) {
         UIPasteboard.general.string = self.materialList[materialList.index(where: {$0.order == sender.tag})!].name
-        let alertController = UIAlertController(title: "Copy text", message: "", preferredStyle: UIAlertControllerStyle.alert)
-        present(alertController, animated: true, completion: {
-            // アラートを閉じる
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.001, execute: {
-                alertController.dismiss(animated: true, completion: nil)
-            })
-        })
     }
 
     @objc func editStickyNote(_ sender: UIButton) {
+        self.isStickyNoteEdit = true
         backScreen = UIView(frame: CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight))
         backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
         self.view.addSubview(backScreen)
@@ -213,12 +209,18 @@ class StickyBoardViewController: UIViewController {
     }
 
     @objc func commitButtonTapped (){
+        self.isStickyNoteEdit = false
         let stickyView = self.findFirstResponder()
         materialManager.rename(stickyView.text, stickyView.material.id!)
         self.view.endEditing(true)
         stickyView.isEditable = false
         stickyView.isSelectable = false
         self.backScreen.removeFromSuperview()
+        let material = stickyView.material
+        material?.xRatio = calculateRatio(Float(self.screenWidth), Float(stickyView.center.x), Float(stickyView.frame.size.width))
+        material?.yRatio = calculateRatio(Float(self.screenHeight), Float(stickyView.center.y), Float(stickyView.frame.size.height))
+        material?.stickyWidth = Float(stickyView.frame.size.width)
+        material?.stickyHeight = Float(stickyView.frame.size.height)
     }
 
     @objc func deleteStickyNote(_ sender: UIButton) {
