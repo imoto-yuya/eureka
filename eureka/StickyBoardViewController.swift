@@ -29,6 +29,9 @@ class StickyBoardViewController: UIViewController {
     var groupID: Int16 = 0
     var groupName: String = ""
     var isNew: Bool = true
+    var backScreen: UIView!
+
+    var selectedStickyNoteID = 0
 
     // タッチ開始時のUIViewのorigin
     var orgOrigin: CGPoint!
@@ -37,10 +40,18 @@ class StickyBoardViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.navigationItem.title = self.groupName
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.hidesBarsOnSwipe = true
+        self.navigationController?.hidesBarsOnTap = true
+        // #selectorで通知後に動く関数を指定。name:は型推論可(".UIDeviceOrientationDidChange")
+        NotificationCenter.default.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
+        self.view.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(self.addNewMemo)))
 
         materialManager.fetch()
+
         // Screen Size の取得
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
@@ -72,21 +83,14 @@ class StickyBoardViewController: UIViewController {
         var counter: Int16 = 0
         for material in materialList {
             material.order = counter
-            self.addStickyNoteToView(material)
+            let stickyView = self.createStickyNoteView(material)
+            self.view.addSubview(stickyView)
             counter += 1
         }
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        self.navigationController?.hidesBarsOnSwipe = true
-        self.navigationController?.hidesBarsOnTap = true
-        // #selectorで通知後に動く関数を指定。name:は型推論可(".UIDeviceOrientationDidChange")
-        NotificationCenter.default.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
-        materialManager.fetch()
-    }
-
     override func didMove(toParentViewController parent: UIViewController?) {
-        if parent == nil && self.isNew{
+        if parent == nil && self.isNew {
             materialManager.deleteGroup(self.groupID, force: false)
         }
     }
@@ -120,34 +124,58 @@ class StickyBoardViewController: UIViewController {
         }
     }
 
-    @objc func handleLongPressGesture(sender: UILongPressGestureRecognizer) {
-        self.view.bringSubview(toFront: sender.view!)
+    @objc func addNewMemo(sender: UILongPressGestureRecognizer) {
         if sender.state == UIGestureRecognizerState.began {
-            let material = self.materialList[materialList.index(where: {$0.order == (sender.view?.tag)!})!]
-            let isMemo = material.isMemo
-            let width = isMemo ? 240 : 160
-            let menu = PopoverMenuController()
-            menu.prepare(at: sender.view!)
-            menu.viewSize = CGSize(width: width, height: 40)
-            self.present(menu, animated: true, completion: {
-                var button = UIButton()
-                button = menu.addItem(withTitle: "Copy")
-                button.tag = (sender.view?.tag)!
-                button.addTarget(self, action: #selector(self.copyStickyNote), for: .touchUpInside)
-                button = menu.addItem(withTitle: "Edit")
-                button.tag = (sender.view?.tag)!
-                button.addTarget(self, action: #selector(self.editStickyNote), for: .touchUpInside)
-                if isMemo {
-                    button = menu.addItem(withTitle: "Delete")
+            backScreen = UIView(frame: CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight))
+            backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
+            self.view.addSubview(backScreen)
+            self.selectedStickyNoteID = Int((self.materialList.last?.order)! + 1)
+            let memo = self.materialManager.addNewMemo("Memo", self.groupID)
+            memo.order = Int16(self.selectedStickyNoteID)
+            memo.xRatio = calculateRatio(Float(self.screenWidth), Float(sender.location(in: self.view).x), memo.stickyWidth*sizeRatio)
+            memo.yRatio = calculateRatio(Float(self.screenHeight), Float(sender.location(in: self.view).y), memo.stickyHeight*sizeRatio)
+            self.materialList.append(memo)
+            let stickyView = self.createStickyNoteView(memo)
+            stickyView.isEditable = true
+            stickyView.becomeFirstResponder()
+            self.view.addSubview(stickyView)
+        }
+    }
+
+    @objc func handleLongPressGesture(sender: UILongPressGestureRecognizer) {
+        let stickyView = sender.view! as! StickyNote
+        self.view.bringSubview(toFront: stickyView)
+        self.selectedStickyNoteID = stickyView.tag
+        let material = self.materialList[materialList.index(where: {$0.order == self.selectedStickyNoteID})!]
+        if sender.state == UIGestureRecognizerState.began {
+            if material.isMemo {
+                backScreen = UIView(frame: CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight))
+                backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
+                self.view.addSubview(backScreen)
+                stickyView.isEditable = true
+                stickyView.becomeFirstResponder()
+            } else {
+                let width = 160
+                let menu = PopoverMenuController()
+                menu.prepare(at: stickyView)
+                menu.viewSize = CGSize(width: width, height: 40)
+                self.present(menu, animated: true, completion: {
+                    var button = UIButton()
+                    button = menu.addItem(withTitle: "Copy")
                     button.tag = (sender.view?.tag)!
-                    button.addTarget(self, action: #selector(self.deleteStickyNote), for: .touchUpInside)
-                }
-            })
+                    button.addTarget(self, action: #selector(self.copyStickyNote), for: .touchUpInside)
+                    button = menu.addItem(withTitle: "Edit")
+                    button.tag = (sender.view?.tag)!
+                    button.addTarget(self, action: #selector(self.editStickyNote), for: .touchUpInside)
+                })
+            }
         }
     }
 
     @objc func handleTapGesture(sender: UITapGestureRecognizer) {
-        self.view.bringSubview(toFront: sender.view!)
+        let stickyView = sender.view as! StickyNote
+        self.view.bringSubview(toFront: stickyView)
+        //print(stickyView.isSelectable)
     }
 
     @objc func changeDirection(notification: NSNotification){
@@ -189,7 +217,8 @@ class StickyBoardViewController: UIViewController {
                 self.materialManager.rename(material.name!, material.id!)
                 // tagは重複しないことを想定
                 self.view.subviews[self.view.subviews.index(where: {$0.tag == sender.tag})!].removeFromSuperview()
-                self.addStickyNoteToView(material)
+                let stickyView = self.createStickyNoteView(material)
+                self.view.addSubview(stickyView)
             }
         }
         alertController.addAction(addAction)
@@ -201,13 +230,25 @@ class StickyBoardViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
 
+    @objc func commitButtonTapped (){
+        let stickyView = self.findFirstResponder()
+        materialManager.rename(stickyView.text, stickyView.material.id!)
+        self.view.endEditing(true)
+        stickyView.isEditable = false
+        stickyView.isSelectable = false
+        self.backScreen.removeFromSuperview()
+    }
+
     @objc func deleteStickyNote(_ sender: UIButton) {
+        let stickyView = self.findFirstResponder()
+        stickyView.isEditable = false
+        stickyView.isSelectable = false
         let alertController = UIAlertController(title: "Delete memo", message: "", preferredStyle: UIAlertControllerStyle.alert)
 
         // Deleteボタンを追加
         let addAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
-            self.view.subviews[self.view.subviews.index(where: {$0.tag == sender.tag})!].removeFromSuperview()
-            let index = self.materialList.index(where: {$0.order == sender.tag})!
+            let index = self.materialList.index(of: stickyView.material)!
+            stickyView.removeFromSuperview()
             self.materialManager.delete(self.materialList[index].id!)
             self.materialList.remove(at: index)
         }
@@ -218,6 +259,7 @@ class StickyBoardViewController: UIViewController {
         alertController.addAction(cancelAction)
 
         present(alertController, animated: true, completion: nil)
+        self.backScreen.removeFromSuperview()
     }
 
     func calculateCoordinate(_ screenLength: Float, _ ratio: Float, _ stickyLength: Float) -> CGFloat {
@@ -228,10 +270,10 @@ class StickyBoardViewController: UIViewController {
         return 2*(travelLength - screenLength/2)/(screenLength - stickyLength)
     }
 
-    func addStickyNoteToView(_ material: Material) {
+    func createStickyNoteView(_ material: Material) -> UITextView {
         let stickyWidth: CGFloat = CGFloat(material.stickyWidth*self.sizeRatio)
         let stickyHeight: CGFloat = CGFloat(material.stickyHeight*self.sizeRatio)
-        let stickyView = DrawSticky(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), material: material)
+        let stickyView = StickyNote(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), material: material)
         stickyView.tag = Int(material.order)
 
         let stickyX: CGFloat = self.calculateCoordinate(Float(self.screenWidth), material.xRatio, Float(stickyWidth))
@@ -240,7 +282,35 @@ class StickyBoardViewController: UIViewController {
         stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(self.handlePanGesture)))
         stickyView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture)))
         stickyView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.handleTapGesture)))
-        self.view.addSubview(stickyView)
+
+        if material.isMemo {
+            // 仮のサイズでツールバー生成
+            let kbToolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 320, height: 40))
+            // スタイルを設定
+            kbToolBar.barStyle = UIBarStyle.default
+            // 画面幅に合わせてサイズを変更
+            kbToolBar.sizeToFit()
+            // 削除ボタン
+            let deleteButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.trash, target: self, action: #selector(StickyBoardViewController.deleteStickyNote))
+            // スペーサ
+            let spacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: self, action: nil)
+            // 閉じるボタン
+            let commitButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done, target: self, action: #selector(StickyBoardViewController.commitButtonTapped))
+            kbToolBar.items = [deleteButton, spacer, commitButton]
+            stickyView.inputAccessoryView = kbToolBar
+        }
+
+        return stickyView
+    }
+
+    func findFirstResponder() -> StickyNote {
+        var stickyView: StickyNote!
+        for view in self.view.subviews {
+            if view.isFirstResponder {
+                stickyView = view as! StickyNote
+            }
+        }
+        return stickyView
     }
 
     @IBAction func saveButton(_ sender: UIBarButtonItem) {
@@ -270,26 +340,5 @@ class StickyBoardViewController: UIViewController {
     }
 
     @IBAction func addMemoButton(_ sender: UIBarButtonItem) {
-        let alertController = UIAlertController(title: "Add memo", message: "", preferredStyle: UIAlertControllerStyle.alert)
-        alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
-            textField.placeholder = "Input memo"
-        })
-
-        // Addボタンを追加
-        let addAction = UIAlertAction(title: "Add", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
-            if let textField = alertController.textFields?.first {
-                let memo = self.materialManager.addNewMemo(textField.text!, self.groupID)
-                memo.order = (self.materialList.last?.order)! + 1
-                self.materialList.append(memo)
-                self.addStickyNoteToView(memo)
-            }
-        }
-        alertController.addAction(addAction)
-
-        // Cancelボタンを追加
-        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-        alertController.addAction(cancelAction)
-
-        present(alertController, animated: true, completion: nil)
     }
 }

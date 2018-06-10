@@ -81,11 +81,13 @@ class MaterialManager {
         material.stickyRGBGreen = material0List[index].stickyRGBGreen
         material.stickyRGBBlue = material0List[index].stickyRGBBlue
         material.stickyRGBAlpha = material0List[index].stickyRGBAlpha
+        materialList.append(material)
         return material
     }
 
     func insert(_ material: Material, _ insertIndex: Int) {
         material0List.insert(material, at: insertIndex)
+        materialList.append(material)
         updateOrder()
         (UIApplication.shared.delegate as! AppDelegate).saveContext()
     }
