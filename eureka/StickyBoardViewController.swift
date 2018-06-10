@@ -129,6 +129,7 @@ class StickyBoardViewController: UIViewController {
             backScreen = UIView(frame: CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight))
             backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
             self.view.addSubview(backScreen)
+
             self.selectedStickyNoteID = Int((self.materialList.last?.order)! + 1)
             let memo = self.materialManager.addNewMemo("Memo", self.groupID)
             memo.order = Int16(self.selectedStickyNoteID)
@@ -136,7 +137,9 @@ class StickyBoardViewController: UIViewController {
             memo.yRatio = calculateRatio(Float(self.screenHeight), Float(sender.location(in: self.view).y), memo.stickyHeight*sizeRatio)
             self.materialList.append(memo)
             let stickyView = self.createStickyNoteView(memo)
+            stickyView.tag = self.selectedStickyNoteID
             stickyView.isEditable = true
+            stickyView.isSelectable = true
             stickyView.becomeFirstResponder()
             self.view.addSubview(stickyView)
         }
@@ -148,34 +151,30 @@ class StickyBoardViewController: UIViewController {
         self.selectedStickyNoteID = stickyView.tag
         let material = self.materialList[materialList.index(where: {$0.order == self.selectedStickyNoteID})!]
         if sender.state == UIGestureRecognizerState.began {
-            if material.isMemo {
-                backScreen = UIView(frame: CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight))
-                backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
-                self.view.addSubview(backScreen)
-                stickyView.isEditable = true
-                stickyView.becomeFirstResponder()
-            } else {
-                let width = 160
-                let menu = PopoverMenuController()
-                menu.prepare(at: stickyView)
-                menu.viewSize = CGSize(width: width, height: 40)
-                self.present(menu, animated: true, completion: {
-                    var button = UIButton()
-                    button = menu.addItem(withTitle: "Copy")
+            let width = material.isMemo ? 240 : 160
+            let menu = PopoverMenuController()
+            menu.prepare(at: stickyView)
+            menu.viewSize = CGSize(width: width, height: 40)
+            self.present(menu, animated: true, completion: {
+                var button = UIButton()
+                button = menu.addItem(withTitle: "Copy")
+                button.tag = (sender.view?.tag)!
+                button.addTarget(self, action: #selector(self.copyStickyNote), for: .touchUpInside)
+                button = menu.addItem(withTitle: "Edit")
+                button.tag = (sender.view?.tag)!
+                button.addTarget(self, action: #selector(self.editStickyNote), for: .touchUpInside)
+                if material.isMemo {
+                    button = menu.addItem(withTitle: "Delete")
                     button.tag = (sender.view?.tag)!
-                    button.addTarget(self, action: #selector(self.copyStickyNote), for: .touchUpInside)
-                    button = menu.addItem(withTitle: "Edit")
-                    button.tag = (sender.view?.tag)!
-                    button.addTarget(self, action: #selector(self.editStickyNote), for: .touchUpInside)
-                })
-            }
+                    button.addTarget(self, action: #selector(self.deleteStickyNote), for: .touchUpInside)
+                }
+            })
         }
     }
 
     @objc func handleTapGesture(sender: UITapGestureRecognizer) {
         let stickyView = sender.view as! StickyNote
         self.view.bringSubview(toFront: stickyView)
-        //print(stickyView.isSelectable)
     }
 
     @objc func changeDirection(notification: NSNotification){
@@ -203,31 +202,14 @@ class StickyBoardViewController: UIViewController {
     }
 
     @objc func editStickyNote(_ sender: UIButton) {
-        let material = self.materialList[materialList.index(where: {$0.order == sender.tag})!]
-
-        let alertController = UIAlertController(title: "Edit", message: "", preferredStyle: UIAlertControllerStyle.alert)
-        alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
-            textField.text = material.name
-        })
-
-        // Editボタンを追加
-        let addAction = UIAlertAction(title: "Edit", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
-            if let textField = alertController.textFields?.first {
-                material.name = textField.text!
-                self.materialManager.rename(material.name!, material.id!)
-                // tagは重複しないことを想定
-                self.view.subviews[self.view.subviews.index(where: {$0.tag == sender.tag})!].removeFromSuperview()
-                let stickyView = self.createStickyNoteView(material)
-                self.view.addSubview(stickyView)
-            }
-        }
-        alertController.addAction(addAction)
-
-        // Cancelボタンを追加
-        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-        alertController.addAction(cancelAction)
-
-        present(alertController, animated: true, completion: nil)
+        backScreen = UIView(frame: CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight))
+        backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
+        self.view.addSubview(backScreen)
+        let stickyView = self.view.subviews[self.view.subviews.index(where: {$0.tag == sender.tag})!] as! StickyNote
+        self.view.bringSubview(toFront: stickyView)
+        stickyView.isEditable = true
+        stickyView.isSelectable = true
+        stickyView.becomeFirstResponder()
     }
 
     @objc func commitButtonTapped (){
@@ -240,7 +222,7 @@ class StickyBoardViewController: UIViewController {
     }
 
     @objc func deleteStickyNote(_ sender: UIButton) {
-        let stickyView = self.findFirstResponder()
+        let stickyView = self.view.subviews[self.view.subviews.index(where: {$0.tag == sender.tag})!] as! StickyNote
         stickyView.isEditable = false
         stickyView.isSelectable = false
         let alertController = UIAlertController(title: "Delete memo", message: "", preferredStyle: UIAlertControllerStyle.alert)
@@ -259,7 +241,6 @@ class StickyBoardViewController: UIViewController {
         alertController.addAction(cancelAction)
 
         present(alertController, animated: true, completion: nil)
-        self.backScreen.removeFromSuperview()
     }
 
     func calculateCoordinate(_ screenLength: Float, _ ratio: Float, _ stickyLength: Float) -> CGFloat {
@@ -283,22 +264,18 @@ class StickyBoardViewController: UIViewController {
         stickyView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture)))
         stickyView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.handleTapGesture)))
 
-        if material.isMemo {
-            // 仮のサイズでツールバー生成
-            let kbToolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 320, height: 40))
-            // スタイルを設定
-            kbToolBar.barStyle = UIBarStyle.default
-            // 画面幅に合わせてサイズを変更
-            kbToolBar.sizeToFit()
-            // 削除ボタン
-            let deleteButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.trash, target: self, action: #selector(StickyBoardViewController.deleteStickyNote))
-            // スペーサ
-            let spacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: self, action: nil)
-            // 閉じるボタン
-            let commitButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done, target: self, action: #selector(StickyBoardViewController.commitButtonTapped))
-            kbToolBar.items = [deleteButton, spacer, commitButton]
-            stickyView.inputAccessoryView = kbToolBar
-        }
+        // 仮のサイズでツールバー生成
+        let kbToolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 320, height: 40))
+        // スタイルを設定
+        kbToolBar.barStyle = UIBarStyle.default
+        // 画面幅に合わせてサイズを変更
+        kbToolBar.sizeToFit()
+        // スペーサ
+        let spacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: self, action: nil)
+        // 閉じるボタン
+        let commitButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done, target: self, action: #selector(StickyBoardViewController.commitButtonTapped))
+        kbToolBar.items = [spacer, commitButton]
+        stickyView.inputAccessoryView = kbToolBar
 
         return stickyView
     }
