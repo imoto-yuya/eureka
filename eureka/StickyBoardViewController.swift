@@ -47,8 +47,6 @@ class StickyBoardViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.hidesBarsOnSwipe = true
         self.navigationController?.hidesBarsOnTap = true
-        // #selectorで通知後に動く関数を指定。name:は型推論可(".UIDeviceOrientationDidChange")
-        NotificationCenter.default.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
         self.view.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(self.addNewMemo)))
 
         materialManager.fetch()
@@ -87,6 +85,19 @@ class StickyBoardViewController: UIViewController {
             let stickyView = self.createStickyNoteView(material)
             self.view.addSubview(stickyView)
             counter += 1
+        }
+    }
+
+    override func viewWillLayoutSubviews() {
+        screenWidth = self.view.bounds.width
+        screenHeight = self.view.bounds.height
+        for subview in self.view.subviews {
+            if let index = materialList.index(where: {$0.order == subview.tag}) {
+                let material = materialList[index]
+                let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), material.xRatio, material.stickyWidth*sizeRatio)
+                let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), material.yRatio, material.stickyHeight*sizeRatio)
+                subview.center = CGPoint(x:stickyX, y:stickyY)
+            }
         }
     }
 
@@ -177,19 +188,6 @@ class StickyBoardViewController: UIViewController {
     @objc func handleTapGesture(sender: UITapGestureRecognizer) {
         let stickyView = sender.view as! StickyNote
         self.view.bringSubview(toFront: stickyView)
-    }
-
-    @objc func changeDirection(notification: NSNotification){
-        screenWidth = self.view.bounds.width
-        screenHeight = self.view.bounds.height
-        for subview in self.view.subviews {
-            if let index = materialList.index(where: {$0.order == subview.tag}) {
-                let material = materialList[index]
-                let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), material.xRatio, material.stickyWidth*sizeRatio)
-                let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), material.yRatio, material.stickyHeight*sizeRatio)
-                subview.center = CGPoint(x:stickyX, y:stickyY)
-            }
-        }
     }
 
     @objc func copyStickyNote(_ sender: UIButton) {

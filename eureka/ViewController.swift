@@ -19,7 +19,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         self.navigationItem.title = "Materials"
 
-        let radius: CGFloat = 80
+        let radius: CGFloat = UIDevice.current.userInterfaceIdiom == .phone ? 60 : 80
         self.eurekaButton = UIButton(frame: CGRect(x: 0, y: 0, width: radius, height: radius))
         self.eurekaButton.setImage(UIImage(named: "EurekaIcon"), for: UIControlState())
         self.eurekaButton.addTarget(self, action: #selector(transitStickyBoard), for: .touchUpInside)
@@ -34,8 +34,6 @@ class ViewController: UIViewController {
         self.navigationController?.setNavigationBarHidden(false, animated: false)
         self.navigationController?.hidesBarsOnSwipe = false
         self.navigationController?.hidesBarsOnTap = false
-        // #selectorで通知後に動く関数を指定。name:は型推論可(".UIDeviceOrientationDidChange")
-        NotificationCenter.default.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
         // CoreDataからデータをfetchしてくる
         materialManager.fetch()
         // taskTableViewを再読み込みする
@@ -43,8 +41,11 @@ class ViewController: UIViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        updateEurekaButtonPosition()
         self.navigationController?.view.addSubview(self.eurekaButton)
+    }
+
+    override func viewWillLayoutSubviews() {
+        updateEurekaButtonPosition()
     }
 
     override func didReceiveMemoryWarning() {
@@ -92,10 +93,6 @@ class ViewController: UIViewController {
         alertController.addAction(cancelAction)
 
         present(alertController, animated: true, completion: nil)
-    }
-
-    @objc func changeDirection(notification: NSNotification){
-        updateEurekaButtonPosition()
     }
 
     @objc func transitStickyBoard(sender: Any) {
