@@ -33,7 +33,7 @@ class StickyBoardViewController: UIViewController {
     var isNew: Bool = true
     var backScreen: UIView!
 
-    var selectedStickyNoteID = 0
+    var selectedStickyNote: StickyNote!
     var isStickyNoteEdit = false
 
     // タッチ開始時のUIViewのorigin
@@ -102,10 +102,10 @@ class StickyBoardViewController: UIViewController {
             if subview != self.backScreen {
                 let stickyView = subview as! StickyNote
                 let material = stickyView.material!
-                let stickyWidth = material.stickyWidth*Float(shortLength)*self.sizeRatio
-                let stickyHeight = material.stickyHeight*Float(shortLength)*self.sizeRatio
-                let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), material.xRatio, stickyWidth)
-                let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), material.yRatio, stickyHeight)
+                let stickyWidth = stickyView.frame.size.width
+                let stickyHeight = stickyView.frame.size.height
+                let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), material.xRatio, Float(stickyWidth))
+                let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), material.yRatio, Float(stickyHeight))
                 subview.center = CGPoint(x:stickyX, y:stickyY)
             }
         }
@@ -124,11 +124,12 @@ class StickyBoardViewController: UIViewController {
 
     // Viewのパンジェスチャーに反応し、処理するためのメソッド
     @objc func handlePanGesture(sender: UIPanGestureRecognizer){
-        self.view.bringSubview(toFront: sender.view!)
+        let stickyView = sender.view! as! StickyNote
+        self.view.bringSubview(toFront: stickyView)
         switch sender.state {
         case UIGestureRecognizerState.began:
             // タッチ開始:タッチされたビューのoriginと親ビュー上のタッチ位置を記録しておく
-            orgOrigin = sender.view?.center
+            orgOrigin = stickyView.center
             orgParentPoint = sender.translation(in: self.view)
             break
         case UIGestureRecognizerState.changed:
@@ -136,12 +137,12 @@ class StickyBoardViewController: UIViewController {
             let newParentPoint = sender.translation(in: self.view)
             // パンジャスチャの継続:タッチ開始時のビューのoriginにタッチ開始からの移動量を加算する
             let travelPoint = orgOrigin + newParentPoint - orgParentPoint
-            let material = self.materialList[materialList.index(where: {$0.order == (sender.view?.tag)!})!]
+            let material = stickyView.material!
             let stickyWidth = material.stickyWidth*Float(shortLength)*self.sizeRatio
             let stickyHeight = material.stickyHeight*Float(shortLength)*self.sizeRatio
             material.xRatio = calculateRatio(Float(screenWidth), Float(travelPoint.x), stickyWidth)
             material.yRatio = calculateRatio(Float(screenHeight), Float(travelPoint.y), stickyHeight)
-            sender.view?.center = travelPoint
+            stickyView.center = travelPoint
             break
         default:
             break
@@ -155,16 +156,14 @@ class StickyBoardViewController: UIViewController {
             backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
             self.view.addSubview(backScreen)
 
-            self.selectedStickyNoteID = Int((self.materialList.last?.order)! + 1)
             let memo = self.materialManager.addNewMemo("Memo", self.groupID)
-            memo.order = Int16(self.selectedStickyNoteID)
-            let stickyWidth = memo.stickyWidth*Float(shortLength)*self.sizeRatio
-            let stickyHeight = memo.stickyHeight*Float(shortLength)*self.sizeRatio
-            memo.xRatio = calculateRatio(Float(self.screenWidth), Float(sender.location(in: self.view).x), stickyWidth)
-            memo.yRatio = calculateRatio(Float(self.screenHeight), Float(sender.location(in: self.view).y), stickyHeight)
             self.materialList.append(memo)
             let stickyView = self.createStickyNoteView(memo)
-            stickyView.tag = self.selectedStickyNoteID
+            let stickyWidth = stickyView.frame.size.width
+            let stickyHeight = stickyView.frame.size.height
+            // タップした場所を指定する
+            memo.xRatio = calculateRatio(Float(self.screenWidth), Float(sender.location(in: self.view).x), Float(stickyWidth))
+            memo.yRatio = calculateRatio(Float(self.screenHeight), Float(sender.location(in: self.view).y), Float(stickyHeight))
             stickyView.isEditable = true
             stickyView.isSelectable = true
             stickyView.becomeFirstResponder()
@@ -174,9 +173,9 @@ class StickyBoardViewController: UIViewController {
 
     @objc func handleLongPressGesture(sender: UILongPressGestureRecognizer) {
         let stickyView = sender.view! as! StickyNote
+        self.selectedStickyNote = stickyView
         self.view.bringSubview(toFront: stickyView)
-        self.selectedStickyNoteID = stickyView.tag
-        let material = self.materialList[materialList.index(where: {$0.order == self.selectedStickyNoteID})!]
+        let material = stickyView.material!
         if sender.state == UIGestureRecognizerState.began && !self.isStickyNoteEdit{
             let width = material.isMemo ? 240 : 160
             let menu = PopoverMenuController()
@@ -185,14 +184,11 @@ class StickyBoardViewController: UIViewController {
             self.present(menu, animated: true, completion: {
                 var button = UIButton()
                 button = menu.addItem(withTitle: "Copy")
-                button.tag = (sender.view?.tag)!
                 button.addTarget(self, action: #selector(self.copyStickyNote), for: .touchUpInside)
                 button = menu.addItem(withTitle: "Edit")
-                button.tag = (sender.view?.tag)!
                 button.addTarget(self, action: #selector(self.editStickyNote), for: .touchUpInside)
                 if material.isMemo {
                     button = menu.addItem(withTitle: "Delete")
-                    button.tag = (sender.view?.tag)!
                     button.addTarget(self, action: #selector(self.deleteStickyNote), for: .touchUpInside)
                 }
             })
@@ -205,7 +201,7 @@ class StickyBoardViewController: UIViewController {
     }
 
     @objc func copyStickyNote(_ sender: UIButton) {
-        UIPasteboard.general.string = self.materialList[materialList.index(where: {$0.order == sender.tag})!].name
+        UIPasteboard.general.string = self.selectedStickyNote.material.name
     }
 
     @objc func editStickyNote(_ sender: UIButton) {
@@ -213,7 +209,7 @@ class StickyBoardViewController: UIViewController {
         backScreen = UIView(frame: CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight))
         backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
         self.view.addSubview(backScreen)
-        let stickyView = self.view.subviews[self.view.subviews.index(where: {$0.tag == sender.tag})!] as! StickyNote
+        let stickyView = self.selectedStickyNote!
         self.view.bringSubview(toFront: stickyView)
         stickyView.isEditable = true
         stickyView.isSelectable = true
@@ -234,7 +230,7 @@ class StickyBoardViewController: UIViewController {
     }
 
     @objc func deleteStickyNote(_ sender: UIButton) {
-        let stickyView = self.view.subviews[self.view.subviews.index(where: {$0.tag == sender.tag})!] as! StickyNote
+        let stickyView = self.selectedStickyNote!
         stickyView.isEditable = false
         stickyView.isSelectable = false
         let alertController = UIAlertController(title: "Delete memo", message: "", preferredStyle: UIAlertControllerStyle.alert)
@@ -267,11 +263,8 @@ class StickyBoardViewController: UIViewController {
         let stickyWidth: CGFloat = CGFloat(material.stickyWidth*self.sizeRatio)*self.shortLength
         let stickyHeight:CGFloat = CGFloat(material.stickyHeight*self.sizeRatio)*self.shortLength
         let stickyView = material.isMemo ? StickyNote(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), material: material, width: stickyWidth, height: stickyHeight) : StickyNote(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), material: material)
-        stickyView.tag = Int(material.order)
 
-        let stickyX: CGFloat = self.calculateCoordinate(Float(self.screenWidth), material.xRatio, Float(stickyWidth))
-        let stickyY: CGFloat = self.calculateCoordinate(Float(self.screenHeight), material.yRatio, Float(stickyHeight))
-        stickyView.center = CGPoint(x: stickyX, y: stickyY)
+        stickyView.center = CGPoint(x: 0, y: 0)
         stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(self.handlePanGesture)))
         stickyView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture)))
         stickyView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.handleTapGesture)))
