@@ -24,6 +24,8 @@ class StickyBoardViewController: UIViewController {
     var materialManager = MaterialManager.materialManager
     var screenWidth: CGFloat = 0
     var screenHeight: CGFloat = 0
+    var shortLength: CGFloat = 0
+    var longLength: CGFloat = 0
     var sizeRatio: Float = 1
     var materialList: [Material] = []
     var groupID: Int16 = 0
@@ -42,6 +44,13 @@ class StickyBoardViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = self.groupName
+
+        // Screen Size の取得
+        screenWidth = self.view.bounds.width
+        screenHeight = self.view.bounds.height
+        shortLength = screenWidth < screenHeight ? screenWidth : screenHeight
+        longLength = screenWidth < screenHeight ? screenHeight : screenWidth
+
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -51,13 +60,9 @@ class StickyBoardViewController: UIViewController {
 
         materialManager.fetch()
 
-        // Screen Size の取得
-        screenWidth = self.view.bounds.width
-        screenHeight = self.view.bounds.height
-
         var needNum: Int = 8
         if UIDevice.current.userInterfaceIdiom == .pad {
-            sizeRatio = 1.5
+            sizeRatio = 0.7
             needNum = 20
         }
 
@@ -91,11 +96,16 @@ class StickyBoardViewController: UIViewController {
     override func viewWillLayoutSubviews() {
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
+        shortLength = screenWidth < screenHeight ? screenWidth : screenHeight
+        longLength = screenWidth < screenHeight ? screenHeight : screenWidth
         for subview in self.view.subviews {
-            if let index = materialList.index(where: {$0.order == subview.tag}) {
-                let material = materialList[index]
-                let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), material.xRatio, material.stickyWidth*sizeRatio)
-                let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), material.yRatio, material.stickyHeight*sizeRatio)
+            if subview != self.backScreen {
+                let stickyView = subview as! StickyNote
+                let material = stickyView.material!
+                let stickyWidth = material.stickyWidth*Float(shortLength)*self.sizeRatio
+                let stickyHeight = material.stickyHeight*Float(shortLength)*self.sizeRatio
+                let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), material.xRatio, stickyWidth)
+                let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), material.yRatio, stickyHeight)
                 subview.center = CGPoint(x:stickyX, y:stickyY)
             }
         }
@@ -127,8 +137,10 @@ class StickyBoardViewController: UIViewController {
             // パンジャスチャの継続:タッチ開始時のビューのoriginにタッチ開始からの移動量を加算する
             let travelPoint = orgOrigin + newParentPoint - orgParentPoint
             let material = self.materialList[materialList.index(where: {$0.order == (sender.view?.tag)!})!]
-            material.xRatio = calculateRatio(Float(screenWidth), Float(travelPoint.x), material.stickyWidth*sizeRatio)
-            material.yRatio = calculateRatio(Float(screenHeight), Float(travelPoint.y), material.stickyHeight*sizeRatio)
+            let stickyWidth = material.stickyWidth*Float(shortLength)*self.sizeRatio
+            let stickyHeight = material.stickyHeight*Float(shortLength)*self.sizeRatio
+            material.xRatio = calculateRatio(Float(screenWidth), Float(travelPoint.x), stickyWidth)
+            material.yRatio = calculateRatio(Float(screenHeight), Float(travelPoint.y), stickyHeight)
             sender.view?.center = travelPoint
             break
         default:
@@ -146,8 +158,10 @@ class StickyBoardViewController: UIViewController {
             self.selectedStickyNoteID = Int((self.materialList.last?.order)! + 1)
             let memo = self.materialManager.addNewMemo("Memo", self.groupID)
             memo.order = Int16(self.selectedStickyNoteID)
-            memo.xRatio = calculateRatio(Float(self.screenWidth), Float(sender.location(in: self.view).x), memo.stickyWidth*sizeRatio)
-            memo.yRatio = calculateRatio(Float(self.screenHeight), Float(sender.location(in: self.view).y), memo.stickyHeight*sizeRatio)
+            let stickyWidth = memo.stickyWidth*Float(shortLength)*self.sizeRatio
+            let stickyHeight = memo.stickyHeight*Float(shortLength)*self.sizeRatio
+            memo.xRatio = calculateRatio(Float(self.screenWidth), Float(sender.location(in: self.view).x), stickyWidth)
+            memo.yRatio = calculateRatio(Float(self.screenHeight), Float(sender.location(in: self.view).y), stickyHeight)
             self.materialList.append(memo)
             let stickyView = self.createStickyNoteView(memo)
             stickyView.tag = self.selectedStickyNoteID
@@ -217,8 +231,6 @@ class StickyBoardViewController: UIViewController {
         let material = stickyView.material
         material?.xRatio = calculateRatio(Float(self.screenWidth), Float(stickyView.center.x), Float(stickyView.frame.size.width))
         material?.yRatio = calculateRatio(Float(self.screenHeight), Float(stickyView.center.y), Float(stickyView.frame.size.height))
-        material?.stickyWidth = Float(stickyView.frame.size.width)
-        material?.stickyHeight = Float(stickyView.frame.size.height)
     }
 
     @objc func deleteStickyNote(_ sender: UIButton) {
@@ -252,9 +264,9 @@ class StickyBoardViewController: UIViewController {
     }
 
     func createStickyNoteView(_ material: Material) -> UITextView {
-        let stickyWidth: CGFloat = CGFloat(material.stickyWidth*self.sizeRatio)
-        let stickyHeight: CGFloat = CGFloat(material.stickyHeight*self.sizeRatio)
-        let stickyView = StickyNote(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), material: material)
+        let stickyWidth: CGFloat = CGFloat(material.stickyWidth*self.sizeRatio)*self.shortLength
+        let stickyHeight:CGFloat = CGFloat(material.stickyHeight*self.sizeRatio)*self.shortLength
+        let stickyView = material.isMemo ? StickyNote(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), material: material, width: stickyWidth, height: stickyHeight) : StickyNote(frame: CGRect(x:0, y:0, width:stickyWidth, height:stickyHeight), material: material)
         stickyView.tag = Int(material.order)
 
         let stickyX: CGFloat = self.calculateCoordinate(Float(self.screenWidth), material.xRatio, Float(stickyWidth))

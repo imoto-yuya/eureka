@@ -109,8 +109,8 @@ class MaterialManager {
         material.xRatio = 0
         material.yRatio = 0
         material.stickyFontSize = 16
-        material.stickyWidth = 120
-        material.stickyHeight = 90
+        material.stickyWidth = 0.35
+        material.stickyHeight = 0.26
         material.stickyRGBRed = 1.0
         material.stickyRGBGreen = 0.937
         material.stickyRGBBlue = 0.522
@@ -154,8 +154,8 @@ class MaterialManager {
         material.xRatio = 0
         material.yRatio = 0
         material.stickyFontSize = 16
-        material.stickyWidth = 200
-        material.stickyHeight = 100
+        material.stickyWidth = 0.8
+        material.stickyHeight = 0.3
         material.stickyRGBRed = 0
         material.stickyRGBGreen = 0
         material.stickyRGBBlue = 0
