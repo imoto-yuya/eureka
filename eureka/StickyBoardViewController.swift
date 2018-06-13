@@ -99,7 +99,10 @@ class StickyBoardViewController: UIViewController {
         shortLength = screenWidth < screenHeight ? screenWidth : screenHeight
         longLength = screenWidth < screenHeight ? screenHeight : screenWidth
         for subview in self.view.subviews {
-            if subview != self.backScreen {
+            if subview == self.backScreen {
+                subview.frame.size = CGSize(width: screenWidth, height: screenHeight)
+                subview.frame.origin = CGPoint(x: 0, y: 0)
+            } else {
                 let stickyView = subview as! StickyNote
                 let material = stickyView.material!
                 let stickyWidth = stickyView.frame.size.width
