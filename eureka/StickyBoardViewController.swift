@@ -22,18 +22,20 @@ class StickyBoardViewController: UIViewController {
     @IBOutlet weak var saveButtonItem: UIBarButtonItem!
 
     var materialManager = MaterialManager.materialManager
+    var materialList: [Material] = []
+    var selectedStickyNote: StickyNote!
+    var toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 320, height: 40))
+    var backScreen: UIView!
+
     var screenWidth: CGFloat = 0
     var screenHeight: CGFloat = 0
     var shortLength: CGFloat = 0
     var longLength: CGFloat = 0
+    var upLength: CGFloat = 0
     var sizeRatio: Float = 1
-    var materialList: [Material] = []
     var groupID: Int16 = 0
     var groupName: String = ""
     var isNew: Bool = true
-    var backScreen: UIView!
-
-    var selectedStickyNote: StickyNote!
     var isStickyNoteEdit = false
 
     // タッチ開始時のUIViewのorigin
@@ -51,11 +53,31 @@ class StickyBoardViewController: UIViewController {
         shortLength = screenWidth < screenHeight ? screenWidth : screenHeight
         longLength = screenWidth < screenHeight ? screenHeight : screenWidth
 
+        backScreen = UIView(frame: CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight))
+        backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
+        // キーボードが表示されている時、背景をタップかドラッグすると上にtransformしたviewが降りてくる
+        // タップかドラッグした時はキーボードをしまうようにする
+        backScreen.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.endEditStickyNote)))
+        backScreen.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.endEditStickyNote)))
+
+        // スタイルを設定
+        self.toolbar.barStyle = UIBarStyle.default
+        // 画面幅に合わせてサイズを変更
+        self.toolbar.sizeToFit()
+        // スペーサ
+        let spacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: self, action: nil)
+        // 閉じるボタン
+        let commitButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done, target: self, action: #selector(StickyBoardViewController.endEditStickyNote))
+        self.toolbar.items = [spacer, commitButton]
     }
 
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.hidesBarsOnSwipe = true
         self.navigationController?.hidesBarsOnTap = true
+        let notification = NotificationCenter.default
+        notification.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
+        notification.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        notification.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         self.view.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(self.addNewMemo)))
 
         materialManager.fetch()
@@ -93,6 +115,11 @@ class StickyBoardViewController: UIViewController {
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        let notification = NotificationCenter.default
+        notification.removeObserver(self)
+    }
+
     override func viewWillLayoutSubviews() {
         screenWidth = self.view.bounds.width
         screenHeight = self.view.bounds.height
@@ -107,8 +134,18 @@ class StickyBoardViewController: UIViewController {
                 let material = stickyView.material!
                 let stickyWidth = stickyView.frame.size.width
                 let stickyHeight = stickyView.frame.size.height
-                let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), material.xRatio, Float(stickyWidth))
-                let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), material.yRatio, Float(stickyHeight))
+                var stickyX: CGFloat = calculateCoordinate(Float(screenWidth), material.xRatio, Float(stickyWidth))
+                var stickyY: CGFloat = calculateCoordinate(Float(screenHeight), material.yRatio, Float(stickyHeight))
+                if stickyX < 0 {
+                    stickyX = 0
+                } else if stickyX > self.screenWidth {
+                    stickyX = self.screenWidth
+                }
+                if stickyY < 0 {
+                    stickyY = 0
+                } else if stickyY > self.screenHeight {
+                    stickyY = self.screenHeight
+                }
                 subview.center = CGPoint(x:stickyX, y:stickyY)
             }
         }
@@ -139,12 +176,23 @@ class StickyBoardViewController: UIViewController {
             // 現在の親ビュー上でのタッチ位置を求める
             let newParentPoint = sender.translation(in: self.view)
             // パンジャスチャの継続:タッチ開始時のビューのoriginにタッチ開始からの移動量を加算する
-            let travelPoint = orgOrigin + newParentPoint - orgParentPoint
+            var travelPoint = orgOrigin + newParentPoint - orgParentPoint
+            if travelPoint.x < 0 {
+                travelPoint.x = 0
+            } else if travelPoint.x > self.screenWidth {
+                travelPoint.x = self.screenWidth
+            }
+            if travelPoint.y < 0 {
+                travelPoint.y = 0
+            } else if travelPoint.y > self.screenHeight {
+                travelPoint.y = self.screenHeight
+            }
             let material = stickyView.material!
             let stickyWidth = material.stickyWidth*Float(shortLength)*self.sizeRatio
             let stickyHeight = material.stickyHeight*Float(shortLength)*self.sizeRatio
             material.xRatio = calculateRatio(Float(screenWidth), Float(travelPoint.x), stickyWidth)
             material.yRatio = calculateRatio(Float(screenHeight), Float(travelPoint.y), stickyHeight)
+            print(travelPoint.x, screenWidth, material.stickyWidth)
             stickyView.center = travelPoint
             break
         default:
@@ -155,22 +203,28 @@ class StickyBoardViewController: UIViewController {
     @objc func addNewMemo(sender: UILongPressGestureRecognizer) {
         if sender.state == UIGestureRecognizerState.began && !self.isStickyNoteEdit{
             self.isStickyNoteEdit = true
-            backScreen = UIView(frame: CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight))
-            backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
             self.view.addSubview(backScreen)
 
             let memo = self.materialManager.addNewMemo("Memo", self.groupID)
             self.materialList.append(memo)
             let stickyView = self.createStickyNoteView(memo)
-            let stickyWidth = stickyView.frame.size.width
-            let stickyHeight = stickyView.frame.size.height
+            self.selectedStickyNote = stickyView as! StickyNote
+            var stickyWidth = stickyView.frame.size.width
+            var stickyHeight = stickyView.frame.size.height
             // タップした場所を指定する
             memo.xRatio = calculateRatio(Float(self.screenWidth), Float(sender.location(in: self.view).x), Float(stickyWidth))
             memo.yRatio = calculateRatio(Float(self.screenHeight), Float(sender.location(in: self.view).y), Float(stickyHeight))
             stickyView.isEditable = true
             stickyView.isSelectable = true
-            stickyView.becomeFirstResponder()
             self.view.addSubview(stickyView)
+
+            stickyWidth = stickyView.frame.size.width
+            stickyHeight = stickyView.frame.size.height
+            let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), memo.xRatio, Float(stickyWidth))
+            let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), memo.yRatio, Float(stickyHeight))
+            stickyView.center = CGPoint(x:stickyX, y:stickyY)
+
+            stickyView.becomeFirstResponder()
         }
     }
 
@@ -203,14 +257,18 @@ class StickyBoardViewController: UIViewController {
         self.view.bringSubview(toFront: stickyView)
     }
 
+    @objc func changeDirection(notification: NSNotification){
+        if self.isStickyNoteEdit {
+            self.endEditStickyNote()
+        }
+    }
+
     @objc func copyStickyNote(_ sender: UIButton) {
         UIPasteboard.general.string = self.selectedStickyNote.material.name
     }
 
     @objc func editStickyNote(_ sender: UIButton) {
         self.isStickyNoteEdit = true
-        backScreen = UIView(frame: CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight))
-        backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
         self.view.addSubview(backScreen)
         let stickyView = self.selectedStickyNote!
         self.view.bringSubview(toFront: stickyView)
@@ -219,9 +277,9 @@ class StickyBoardViewController: UIViewController {
         stickyView.becomeFirstResponder()
     }
 
-    @objc func commitButtonTapped (){
+    @objc func endEditStickyNote (){
         self.isStickyNoteEdit = false
-        let stickyView = self.findFirstResponder()
+        let stickyView = self.selectedStickyNote!
         materialManager.rename(stickyView.text, stickyView.material.id!)
         self.view.endEditing(true)
         stickyView.isEditable = false
@@ -254,6 +312,23 @@ class StickyBoardViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
 
+    @objc func keyboardWillShow(notification: Notification?) {
+        let keyboardHeight: CGFloat = ((notification?.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height)!
+        let stickyHeight = self.selectedStickyNote.center.y
+        self.upLength = stickyHeight - (self.screenHeight - keyboardHeight)/2
+        if self.upLength < 0 {
+            self.upLength = 0
+        } else if self.upLength > keyboardHeight {
+            self.upLength = keyboardHeight
+        }
+        self.view.transform = CGAffineTransform(translationX: 0, y: -1*self.upLength)
+    }
+
+    // キーボードが消えたときに、画面を戻す
+    @objc func keyboardWillHide(notification: Notification?) {
+        self.view.transform = CGAffineTransform.identity
+    }
+
     func calculateCoordinate(_ screenLength: Float, _ ratio: Float, _ stickyLength: Float) -> CGFloat {
         return CGFloat((screenLength - stickyLength)/2*ratio + screenLength/2)
     }
@@ -271,30 +346,8 @@ class StickyBoardViewController: UIViewController {
         stickyView.addGestureRecognizer(UIPanGestureRecognizer(target:self, action:#selector(self.handlePanGesture)))
         stickyView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture)))
         stickyView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.handleTapGesture)))
+        stickyView.inputAccessoryView = self.toolbar
 
-        // 仮のサイズでツールバー生成
-        let kbToolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 320, height: 40))
-        // スタイルを設定
-        kbToolBar.barStyle = UIBarStyle.default
-        // 画面幅に合わせてサイズを変更
-        kbToolBar.sizeToFit()
-        // スペーサ
-        let spacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: self, action: nil)
-        // 閉じるボタン
-        let commitButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done, target: self, action: #selector(StickyBoardViewController.commitButtonTapped))
-        kbToolBar.items = [spacer, commitButton]
-        stickyView.inputAccessoryView = kbToolBar
-
-        return stickyView
-    }
-
-    func findFirstResponder() -> StickyNote {
-        var stickyView: StickyNote!
-        for view in self.view.subviews {
-            if view.isFirstResponder {
-                stickyView = view as! StickyNote
-            }
-        }
         return stickyView
     }
 
