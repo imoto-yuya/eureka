@@ -188,11 +188,8 @@ class StickyBoardViewController: UIViewController {
                 travelPoint.y = self.screenHeight
             }
             let material = stickyView.material!
-            let stickyWidth = material.stickyWidth*Float(shortLength)*self.sizeRatio
-            let stickyHeight = material.stickyHeight*Float(shortLength)*self.sizeRatio
-            material.xRatio = calculateRatio(Float(screenWidth), Float(travelPoint.x), stickyWidth)
-            material.yRatio = calculateRatio(Float(screenHeight), Float(travelPoint.y), stickyHeight)
-            print(travelPoint.x, screenWidth, material.stickyWidth)
+            material.xRatio = calculateRatio(Float(screenWidth), Float(travelPoint.x), Float(stickyView.frame.size.width))
+            material.yRatio = calculateRatio(Float(screenHeight), Float(travelPoint.y), Float(stickyView.frame.size.height))
             stickyView.center = travelPoint
             break
         default:
