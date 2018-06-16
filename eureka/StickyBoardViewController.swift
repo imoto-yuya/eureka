@@ -91,6 +91,7 @@ class StickyBoardViewController: UIViewController {
         }
 
         if isNew {
+            materialList = []
             self.saveButtonItem.isEnabled = true
             self.saveButtonItem.tintColor = nil
             let random = RandomizedExtraction(materialManager.material0List.count)
@@ -108,18 +109,18 @@ class StickyBoardViewController: UIViewController {
             materialList = materialManager.getGroup(self.groupID)
         }
 
-        var counter: Int16 = 0
         for material in materialList {
-            material.order = counter
             let stickyView = self.createStickyNoteView(material)
             self.view.addSubview(stickyView)
-            counter += 1
         }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        let notification = NotificationCenter.default
-        notification.removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
+        materialManager.deleteGroup(self.groupID, force: false)
+        for subview in self.view.subviews {
+            subview.removeFromSuperview()
+        }
     }
 
     override func viewWillLayoutSubviews() {
@@ -150,12 +151,6 @@ class StickyBoardViewController: UIViewController {
                 }
                 subview.center = CGPoint(x:stickyX, y:stickyY)
             }
-        }
-    }
-
-    override func didMove(toParentViewController parent: UIViewController?) {
-        if parent == nil && self.isNew {
-            materialManager.deleteGroup(self.groupID, force: false)
         }
     }
 
