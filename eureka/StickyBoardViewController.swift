@@ -23,7 +23,7 @@ class StickyBoardViewController: UIViewController {
 
     var materialManager = MaterialManager.materialManager
     var materialList: [Material] = []
-    var selectedStickyNote: StickyNote!
+    var selectedStickyNote: StickyNote?
     var toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 320, height: 40))
     var backScreen: UIView!
 
@@ -57,18 +57,20 @@ class StickyBoardViewController: UIViewController {
         backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
         // キーボードが表示されている時、背景をタップかドラッグすると上にtransformしたviewが降りてくる
         // タップかドラッグした時はキーボードをしまうようにする
-        backScreen.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.endEditStickyNote)))
-        backScreen.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.endEditStickyNote)))
+        backScreen.addGestureRecognizer(UITapGestureRecognizer(target: self, action: nil))
+        backScreen.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: nil))
 
         // スタイルを設定
         self.toolbar.barStyle = UIBarStyle.default
         // 画面幅に合わせてサイズを変更
         self.toolbar.sizeToFit()
+        // 削除ボタン
+        let deleteButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.trash, target: self, action: #selector(self.deleteStickyNote))
         // スペーサ
         let spacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: self, action: nil)
         // 閉じるボタン
-        let commitButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done, target: self, action: #selector(StickyBoardViewController.endEditStickyNote))
-        self.toolbar.items = [spacer, commitButton]
+        let commitButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done, target: self, action: #selector(self.endEditStickyNote))
+        self.toolbar.items = [deleteButton, spacer, commitButton]
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -205,7 +207,7 @@ class StickyBoardViewController: UIViewController {
             let memo = self.materialManager.addNewMemo("Memo", self.groupID)
             self.materialList.append(memo)
             let stickyView = self.createStickyNoteView(memo)
-            self.selectedStickyNote = stickyView as! StickyNote
+            self.selectedStickyNote = stickyView as? StickyNote
             var stickyWidth = stickyView.frame.size.width
             var stickyHeight = stickyView.frame.size.height
             // タップした場所を指定する
@@ -226,25 +228,20 @@ class StickyBoardViewController: UIViewController {
     }
 
     @objc func handleLongPressGesture(sender: UILongPressGestureRecognizer) {
-        let stickyView = sender.view! as! StickyNote
-        self.selectedStickyNote = stickyView
-        self.view.bringSubview(toFront: stickyView)
-        let material = stickyView.material!
-        if sender.state == UIGestureRecognizerState.began && !self.isStickyNoteEdit{
-            let width = material.isMemo ? 240 : 160
+        self.selectedStickyNote = sender.view! as? StickyNote
+        self.view.bringSubview(toFront: self.selectedStickyNote!)
+        if sender.state == UIGestureRecognizerState.began && !self.isStickyNoteEdit {
             let menu = PopoverMenuController()
-            menu.prepare(at: stickyView)
-            menu.viewSize = CGSize(width: width, height: 40)
+            menu.prepare(at: self.selectedStickyNote!)
+            menu.viewSize = CGSize(width: 240, height: 40)
             self.present(menu, animated: true, completion: {
                 var button = UIButton()
                 button = menu.addItem(withTitle: "Copy")
                 button.addTarget(self, action: #selector(self.copyStickyNote), for: .touchUpInside)
                 button = menu.addItem(withTitle: "Edit")
                 button.addTarget(self, action: #selector(self.editStickyNote), for: .touchUpInside)
-                if material.isMemo {
-                    button = menu.addItem(withTitle: "Delete")
-                    button.addTarget(self, action: #selector(self.deleteStickyNote), for: .touchUpInside)
-                }
+                button = menu.addItem(withTitle: "Delete")
+                button.addTarget(self, action: #selector(self.deleteStickyNote), for: .touchUpInside)
             })
         }
     }
@@ -261,7 +258,7 @@ class StickyBoardViewController: UIViewController {
     }
 
     @objc func copyStickyNote(_ sender: UIButton) {
-        UIPasteboard.general.string = self.selectedStickyNote.material.name
+        UIPasteboard.general.string = self.selectedStickyNote?.material.name
     }
 
     @objc func editStickyNote(_ sender: UIButton) {
@@ -288,6 +285,10 @@ class StickyBoardViewController: UIViewController {
     }
 
     @objc func deleteStickyNote(_ sender: UIButton) {
+        if self.isStickyNoteEdit {
+            self.isStickyNoteEdit = false
+            self.backScreen.removeFromSuperview()
+        }
         let stickyView = self.selectedStickyNote!
         stickyView.isEditable = false
         stickyView.isSelectable = false
@@ -297,7 +298,7 @@ class StickyBoardViewController: UIViewController {
         let addAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.default) { (action: UIAlertAction) in
             let index = self.materialList.index(of: stickyView.material)!
             stickyView.removeFromSuperview()
-            self.materialManager.delete(self.materialList[index].id!)
+            self.materialManager.delete(self.materialList[index])
             self.materialList.remove(at: index)
         }
         alertController.addAction(addAction)
@@ -311,14 +312,15 @@ class StickyBoardViewController: UIViewController {
 
     @objc func keyboardWillShow(notification: Notification?) {
         let keyboardHeight: CGFloat = ((notification?.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height)!
-        let stickyHeight = self.selectedStickyNote.center.y
-        self.upLength = stickyHeight - (self.screenHeight - keyboardHeight)/2
-        if self.upLength < 0 {
-            self.upLength = 0
-        } else if self.upLength > keyboardHeight {
-            self.upLength = keyboardHeight
+        if let stickyView = self.selectedStickyNote {
+            self.upLength = stickyView.center.y - (self.screenHeight - keyboardHeight)/2
+            if self.upLength < 0 {
+                self.upLength = 0
+            } else if self.upLength > keyboardHeight {
+                self.upLength = keyboardHeight
+            }
+            self.view.transform = CGAffineTransform(translationX: 0, y: -1*self.upLength)
         }
-        self.view.transform = CGAffineTransform(translationX: 0, y: -1*self.upLength)
     }
 
     // キーボードが消えたときに、画面を戻す

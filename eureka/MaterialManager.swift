@@ -130,11 +130,9 @@ class MaterialManager {
         (UIApplication.shared.delegate as! AppDelegate).saveContext()
     }
 
-    func delete(_ uuid: UUID) {
-        for material in self.materialList.filter({$0.id == uuid}) {
-            self.materialList.remove(at: self.materialList.index(of: material)!)
-            context.delete(material)
-        }
+    func delete(_ material: Material) {
+        self.materialList.remove(at: self.materialList.index(of: material)!)
+        context.delete(material)
         (UIApplication.shared.delegate as! AppDelegate).saveContext()
     }
 
