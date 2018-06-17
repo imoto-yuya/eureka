@@ -80,7 +80,11 @@ class StickyBoardViewController: UIViewController {
         notification.addObserver(self, selector: #selector(changeDirection), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
         notification.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         notification.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        self.view.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(self.addNewMemo)))
+        // 付箋のジェスチャーと競合しないようにメモの追加の長押しの時間を延長して、付箋の長押しを優先させる
+        // 押し時間0.5以上にする必要あり
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture4MainView))
+        longPress.minimumPressDuration = 0.5
+        self.view.addGestureRecognizer(longPress)
 
         materialManager.fetch()
 
@@ -194,31 +198,9 @@ class StickyBoardViewController: UIViewController {
         }
     }
 
-    @objc func addNewMemo(sender: UILongPressGestureRecognizer) {
+    @objc func handleLongPressGesture4MainView(sender: UILongPressGestureRecognizer) {
         if sender.state == UIGestureRecognizerState.began && !self.isStickyNoteEdit{
-            self.isStickyNoteEdit = true
-            self.view.addSubview(backScreen)
-
-            let memo = self.materialManager.addNewMemo("Memo", self.groupID)
-            self.materialList.append(memo)
-            let stickyView = self.createStickyNoteView(memo)
-            self.selectedStickyNote = stickyView as? StickyNote
-            var stickyWidth = stickyView.frame.size.width
-            var stickyHeight = stickyView.frame.size.height
-            // タップした場所を指定する
-            memo.xRatio = calculateRatio(Float(self.screenWidth), Float(sender.location(in: self.view).x), Float(stickyWidth))
-            memo.yRatio = calculateRatio(Float(self.screenHeight), Float(sender.location(in: self.view).y), Float(stickyHeight))
-            stickyView.isEditable = true
-            stickyView.isSelectable = true
-            self.view.addSubview(stickyView)
-
-            stickyWidth = stickyView.frame.size.width
-            stickyHeight = stickyView.frame.size.height
-            let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), memo.xRatio, Float(stickyWidth))
-            let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), memo.yRatio, Float(stickyHeight))
-            stickyView.center = CGPoint(x:stickyX, y:stickyY)
-
-            stickyView.becomeFirstResponder()
+            self.addNewMemo(Float(sender.location(in: self.view).x), Float(sender.location(in: self.view).y))
         }
     }
 
@@ -345,6 +327,32 @@ class StickyBoardViewController: UIViewController {
         return stickyView
     }
 
+    func addNewMemo(_ x: Float, _ y: Float) {
+        self.isStickyNoteEdit = true
+        self.view.addSubview(backScreen)
+
+        let memo = self.materialManager.addNewMemo("Memo", self.groupID)
+        self.materialList.append(memo)
+        let stickyView = self.createStickyNoteView(memo)
+        self.selectedStickyNote = stickyView as? StickyNote
+        var stickyWidth = stickyView.frame.size.width
+        var stickyHeight = stickyView.frame.size.height
+        // タップした場所を指定する
+        memo.xRatio = calculateRatio(Float(self.screenWidth), x, Float(stickyWidth))
+        memo.yRatio = calculateRatio(Float(self.screenHeight), y, Float(stickyHeight))
+        stickyView.isEditable = true
+        stickyView.isSelectable = true
+        self.view.addSubview(stickyView)
+
+        stickyWidth = stickyView.frame.size.width
+        stickyHeight = stickyView.frame.size.height
+        let stickyX: CGFloat = calculateCoordinate(Float(screenWidth), memo.xRatio, Float(stickyWidth))
+        let stickyY: CGFloat = calculateCoordinate(Float(screenHeight), memo.yRatio, Float(stickyHeight))
+        stickyView.center = CGPoint(x:stickyX, y:stickyY)
+
+        stickyView.becomeFirstResponder()
+    }
+
     @IBAction func saveButton(_ sender: UIBarButtonItem) {
         let alertController = UIAlertController(title: "Save", message: "", preferredStyle: UIAlertControllerStyle.alert)
         alertController.addTextField(configurationHandler: {(textField: UITextField!) -> Void in
@@ -372,5 +380,6 @@ class StickyBoardViewController: UIViewController {
     }
 
     @IBAction func addMemoButton(_ sender: UIBarButtonItem) {
+        self.addNewMemo(Float(self.screenWidth/2), Float(self.screenHeight/2))
     }
 }
