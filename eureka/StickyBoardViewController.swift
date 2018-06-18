@@ -56,7 +56,7 @@ class StickyBoardViewController: UIViewController {
         backScreen = UIView(frame: CGRect(x: 0, y: 0, width: self.screenWidth, height: self.screenHeight))
         backScreen.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
         // キーボードが表示されている時、背景をタップかドラッグすると上にtransformしたviewが降りてくる
-        // タップかドラッグした時はキーボードをしまうようにする
+        // タップかドラッグしても反応しないようにする
         backScreen.addGestureRecognizer(UITapGestureRecognizer(target: self, action: nil))
         backScreen.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: nil))
 
