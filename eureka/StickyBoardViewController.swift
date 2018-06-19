@@ -116,6 +116,11 @@ class StickyBoardViewController: UIViewController {
         for material in materialList {
             let stickyView = self.createStickyNoteView(material)
             self.view.addSubview(stickyView)
+            if material.isMemo {
+                self.view.bringSubview(toFront: stickyView)
+            } else {
+                self.view.sendSubview(toBack: stickyView)
+            }
         }
     }
 
