@@ -26,6 +26,8 @@ class ViewController: UIViewController {
 
         self.materialTableView.dataSource = self
         self.materialTableView.delegate = self
+        self.materialTableView.estimatedRowHeight = 90
+        self.materialTableView.rowHeight = UITableViewAutomaticDimension
         // ナビゲーションバーに編集ボタンを追加
         self.navigationItem.setRightBarButton(self.editButtonItem, animated: true)
     }
@@ -114,8 +116,10 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 
     // セルの内容を決める
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = materialTableView.dequeueReusableCell(withIdentifier: "materialCell", for: indexPath)
-        cell.textLabel?.text = materialManager.material0List[indexPath.row].name
+        guard let cell = materialTableView.dequeueReusableCell(withIdentifier: "materialCell", for: indexPath) as? MaterialTableViewCell else {
+            fatalError("Unexpected index path")
+        }
+        cell.materialLabel.text = materialManager.material0List[indexPath.row].name
         return cell
     }
 
